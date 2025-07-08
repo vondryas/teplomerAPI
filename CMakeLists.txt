@@ -39,7 +39,34 @@ elseif (CMAKE_CXX_STANDARD LESS 20)
     message(STATUS "use c++17")
 else ()
     message(STATUS "use c++20")
-endif ()
+endif()
+
+if(DEFINED ENV{DB_HOST})
+    set(DB_HOST "$ENV{DB_HOST}")
+else()
+    message(FATAL_ERROR "DB_HOST není definována v prostředí")
+endif()
+
+if(DEFINED ENV{DB_NAME})
+    set(DB_NAME "$ENV{DB_NAME}")
+else()
+    message(FATAL_ERROR "DB_NAME není definována v prostředí")
+endif()
+
+if(DEFINED ENV{DB_USER})
+    set(DB_USER "$ENV{DB_USER}")
+else()
+    message(FATAL_ERROR "DB_USER není definována v prostředí")
+endif()
+
+if(DEFINED ENV{DB_PASSWD})
+    set(DB_PASSWD "$ENV{DB_PASSWD}")
+else()
+    message(FATAL_ERROR "DB_PASSWD není definována v prostředí")
+endif()
+
+configure_file(${CMAKE_SOURCE_DIR}/config_template.json
+               ${CMAKE_BINARY_DIR}/config.json)
 
 aux_source_directory(controllers CTL_SRC)
 aux_source_directory(controllers/callbacks CALLBACKS_SRC)
