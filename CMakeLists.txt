@@ -42,11 +42,13 @@ else ()
 endif ()
 
 aux_source_directory(controllers CTL_SRC)
+aux_source_directory(controllers/callbacks CALLBACKS_SRC)
 aux_source_directory(filters FILTER_SRC)
 aux_source_directory(plugins PLUGIN_SRC)
 aux_source_directory(models MODEL_SRC)
 aux_source_directory(models/request MODEL_REQUEST_SRC)
 aux_source_directory(models/list MODEL_LIST_SRC)
+aux_source_directory(models/model_utils MODEL_UTILS_SRC)
 aux_source_directory(plugins/facades FACADES_SRC)
 
 drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
@@ -71,7 +73,9 @@ target_sources(${PROJECT_NAME}
                ${MODEL_SRC}
                ${MODEL_REQUEST_SRC}
                ${MODEL_LIST_SRC}
-               ${FACADES_SRC})
+               ${FACADES_SRC}
+               ${MODEL_UTILS_SRC}
+               ${CALLBACKS_SRC})
 # ##############################################################################
 # uncomment the following line for dynamically loading views 
 # set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS ON)

@@ -29,9 +29,7 @@ namespace facade
 
 		void getDbClient();
 
-		/// This method must be called by drogon to shutdown the plugin.
-		/// It must be implemented by the user.
-		void shutdown() override;
+
 	protected:
 		drogon::orm::DbClientPtr dbClient;
 	};
