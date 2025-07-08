@@ -6,6 +6,9 @@
  */
 
 #include "SensorData.h"
+#include <string>
+
+
 
 void SensorData::getOne(const HttpRequestPtr& req,
 	std::function<void(const HttpResponsePtr&)>&& callback,
@@ -40,7 +43,7 @@ void SensorData::get(const HttpRequestPtr& req,
 		resp->setBody("Database client not available");
 		callback(resp);
 		return;
-	}
+}
 	orm::Mapper<drogon_model::teplomer_db::SensorData> mapper(dbClient);
 	mapper.findAll(
 		onMultipleRows(callback),
