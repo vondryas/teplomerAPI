@@ -7,18 +7,22 @@
 
 #pragma once
 
-
+#include "ControllerBase.h"
+#include <drogon/HttpController.h>
 #include <models/SensorData.h>
 #include <request/SensorDataRequest.h>
-#include <drogon/HttpController.h>
 #include <controllers/callbacks/SensorDataCallback.h>
+#include <facades/SensorDataFacade.h>
 
 using namespace drogon;
 /**
  * @brief this class is created by the drogon_ctl command (drogon_ctl create controller -r SensorData --resource=../models).
  * this class is a restful API controller.
  */
-class SensorData : public drogon::HttpController<SensorData>, public callbacks::SensorDataCallback
+class SensorData :
+	public ControllerBase<facade::SensorDataFacade>,
+	public callbacks::SensorDataCallback,
+	public drogon::HttpController<SensorData>
 {
 public:
 	METHOD_LIST_BEGIN

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../DrogonModelBase.h"
+#include "../IDrogonModel.h"
 #include <JSON/json.h>
 #include <string>
 #include <vector>
 
 template <typename T>
 Json::Value toJson(const std::vector<T>& vec) {
-	static_assert(std::is_base_of<drogon_model::teplomer_db::DrogonModelBase, T>::value,
+	static_assert(std::is_base_of<drogon_model::teplomer_db::IDrogonModel, T>::value,
 		"T must derive from DrogonModelBase");
 
 	Json::Value arr(Json::arrayValue);

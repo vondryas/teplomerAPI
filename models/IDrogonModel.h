@@ -4,8 +4,9 @@ namespace drogon_model
 {
 	namespace teplomer_db
 	{
-		class DrogonModelBase{
-			
+		class IDrogonModel {
+		public:
+			virtual ~IDrogonModel() = default;
 		};
 	}
 }

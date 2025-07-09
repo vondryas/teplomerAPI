@@ -4,7 +4,7 @@
 #include <drogon/orm/DbClient.h>
 #include <vector>
 #include <functional>
-#include <models/DrogonModelBase.h>
+#include <models/IDrogonModel.h>
 #include <json/json.h>
 #include <String>
 #include <models/model_utils/ModelUtils.h>

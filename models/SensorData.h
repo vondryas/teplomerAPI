@@ -25,7 +25,7 @@
 #include <tuple>
 #include <stdint.h>
 #include <iostream>
-#include "DrogonModelBase.h"
+#include "IDrogonModel.h"
 
 namespace drogon
 {
@@ -40,7 +40,7 @@ namespace drogon_model
 namespace teplomer_db
 {
 
-	class SensorData : public DrogonModelBase
+	class SensorData : public IDrogonModel
 {
   public:
     struct Cols

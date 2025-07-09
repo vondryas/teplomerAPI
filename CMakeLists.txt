@@ -76,7 +76,7 @@ aux_source_directory(models MODEL_SRC)
 aux_source_directory(models/request MODEL_REQUEST_SRC)
 aux_source_directory(models/list MODEL_LIST_SRC)
 aux_source_directory(models/model_utils MODEL_UTILS_SRC)
-aux_source_directory(plugins/facades FACADES_SRC)
+aux_source_directory(facades FACADES_SRC)
 
 drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
                     ${CMAKE_CURRENT_BINARY_DIR})
