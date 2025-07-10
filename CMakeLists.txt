@@ -70,6 +70,7 @@ configure_file(${CMAKE_SOURCE_DIR}/config_template.json
 
 aux_source_directory(controllers CTL_SRC)
 aux_source_directory(controllers/callbacks CALLBACKS_SRC)
+aux_source_directory(controllers/responses RESPONSES_SRC)
 aux_source_directory(filters FILTER_SRC)
 aux_source_directory(plugins PLUGIN_SRC)
 aux_source_directory(models MODEL_SRC)
@@ -102,7 +103,8 @@ target_sources(${PROJECT_NAME}
                ${MODEL_LIST_SRC}
                ${FACADES_SRC}
                ${MODEL_UTILS_SRC}
-               ${CALLBACKS_SRC})
+               ${CALLBACKS_SRC}
+               ${RESPONSES_SRC})
 # ##############################################################################
 # uncomment the following line for dynamically loading views 
 # set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS ON)

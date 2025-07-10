@@ -8,48 +8,83 @@
 #include "SensorData.h"
 #include <string>
 
-
-
-void SensorData::getOne(const HttpRequestPtr& req,
-	std::function<void(const HttpResponsePtr&)>&& callback,
-	const std::string& id)
-{
-
-	LOG_DEBUG << "SensorData::getOne called with id: " << id;
-	auto resp = HttpResponse::newHttpResponse();
-	resp->setStatusCode(drogon::k200OK);
-	resp->setContentTypeCode(drogon::CT_TEXT_PLAIN);
-	resp->setBody("ok");
-	callback(resp);
-}
-
-
 void SensorData::get(const HttpRequestPtr& req,
 	std::function<void(const HttpResponsePtr&)>&& callback)
 {
+	int32_t id = 0;
+	size_t page = 0;
+	size_t limit = 20;
 	LOG_DEBUG << "SensorData::get called";
 	facade_->hello();
-	/*
-	std::string pageStr = req->getParameter("page");
-	std::string limitStr = req->getParameter("limit");
-	*/
-
-	orm::DbClientPtr dbClient = drogon::app().getDbClient();
-	if (!dbClient)
+	std::string idStr = req->getParameter("id");
+	if (!idStr.empty())
 	{
-		LOG_ERROR << "No database client available";
-		auto resp = drogon::HttpResponse::newHttpResponse();
-		resp->setStatusCode(drogon::k500InternalServerError);
-		resp->setContentTypeCode(drogon::CT_TEXT_PLAIN);
-		resp->setBody("Database client not available");
-		callback(resp);
+		try {
+
+			id = std::stoi(idStr);
+		}
+		catch (const std::invalid_argument& e) {
+			LOG_ERROR << "Invalid id parameter: " << idStr;
+			responses::wrongRequestResponse("Invalid id parameter", callback);
+			return;
+		}
+		catch (const std::out_of_range& e) {
+			LOG_ERROR << "Id parameter out of range: " << idStr;
+			responses::wrongRequestResponse("Id parameter out of range", callback);
+			return;
+		}
+		LOG_DEBUG << "Fetching SensorData with id: " << id;
+		facade_->getById(id, onSingleRow(callback), onError(callback));
 		return;
 	}
-	orm::Mapper<drogon_model::teplomer_db::SensorData> mapper(dbClient);
-	mapper.findAll(
-		onMultipleRows(callback),
-		onError(callback)
-	);
+
+	std::string pageStr = req->getParameter("page");
+	LOG_DEBUG << "page" << pageStr;
+	std::string limitStr = req->getParameter("limit");
+	LOG_DEBUG << "limit" << limitStr;
+
+	if (!pageStr.empty() || !limitStr.empty())
+	{
+		try {
+			if (!pageStr.empty())
+			{
+				page = std::stoul(pageStr);
+			}
+		}
+		catch (const std::invalid_argument& e) {
+			responses::wrongRequestResponse("Invalid page parameter", callback);
+			return;
+		}
+		catch (const std::out_of_range& e) {
+			LOG_ERROR << "Page parameter out of range: " << pageStr;
+			responses::wrongRequestResponse("Page parameter out of range", callback);
+			return;
+		}
+		try {
+			if (!limitStr.empty())
+			{
+				limit = std::stoul(limitStr);
+			}
+		}
+		catch (const std::invalid_argument& e) {
+			LOG_ERROR << "Invalid limit parameter: " << limitStr;
+			responses::wrongRequestResponse("Invalid limit parameter", callback);
+			return;
+		}
+		catch (const std::out_of_range& e) {
+			LOG_ERROR << "Limit parameter out of range: " << limitStr;
+			responses::wrongRequestResponse("Limit parameter out of range", callback);
+			return;
+		}
+		facade_->getPaginated(page, limit,
+			onMultipleRows(callback),
+			onError(callback));
+	}
+	else
+	{
+		facade_->getAll(onMultipleRows(callback),
+			onError(callback));
+	}
 }
 
 void SensorData::create(const HttpRequestPtr& req,

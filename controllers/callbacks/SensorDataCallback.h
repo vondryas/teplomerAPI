@@ -4,6 +4,7 @@
 #include <drogon/HttpController.h>
 #include <drogon/orm/DbClient.h>
 #include <models/SensorData.h>
+#include <controllers/responses/Response.h>
 
 namespace callbacks
 {
@@ -21,7 +22,6 @@ namespace callbacks
 
 		// Implementation of MultipleRowsCallback for SensorData
 		MultipleRowsCallback<drogon_model::teplomer_db::SensorData> onMultipleRows(HttpResponseCallback& cb) const;
-
 
 		// Inherited via ICallbackBase
 		CountCallback onCount(HttpResponseCallback& cb) const override;

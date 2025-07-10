@@ -8,6 +8,17 @@
 #include <json/json.h>
 #include <String>
 #include <models/model_utils/ModelUtils.h>
+#include <controllers/responses/Response.h>
+
+// Type aliases for various callback types
+using HttpResponseCallback = std::function<void(const drogon::HttpResponsePtr&)>;
+using DbErrorCallback =
+std::function<void(const drogon::orm::DrogonDbException&)>;
+template <typename T>
+using SingleRowCallback = std::function<void(T)>;
+template <typename T>
+using MultipleRowsCallback = std::function<void(std::vector<T>)>;
+using CountCallback = std::function<void(const size_t)>;
 
 namespace callbacks
 {
@@ -15,16 +26,6 @@ namespace callbacks
 	class ICallbackBase
 	{
 	public:
-		// Type aliases for various callback types
-		using HttpResponseCallback = std::function<void(const drogon::HttpResponsePtr&)>;
-		using DbErrorCallback =
-			std::function<void(const drogon::orm::DrogonDbException&)>;
-		template <typename T>
-		using SingleRowCallback = std::function<void(T)>;
-		template <typename T>
-		using MultipleRowsCallback = std::function<void(std::vector<T>)>;
-		using CountCallback = std::function<void(const size_t)>;
-
 		virtual ~ICallbackBase() = default;
 
 	protected:

@@ -15,5 +15,6 @@ namespace facade
 		virtual ~FacadeBase() = default;
 	protected:
 		drogon::orm::DbClientPtr dbClient_;
+		
 	};
 }
