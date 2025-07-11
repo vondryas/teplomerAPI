@@ -54,7 +54,7 @@ jobs:
         DB_PASSWD: ${{ secrets.DB_PASSWD }}
       run: |
         cmake -B ${{ steps.strings.outputs.build-output-dir }} \
-          -G "${{ matrix.generator }}" \
+          -G "${{ matrix.config.generator }}" \
           -DCMAKE_CXX_COMPILER=${{ matrix.config.cpp_compiler }} \
           -DCMAKE_C_COMPILER=${{ matrix.config.c_compiler }} \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
@@ -62,4 +62,4 @@ jobs:
           -S ${{ github.workspace }}
 
     - name: Build
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} 
