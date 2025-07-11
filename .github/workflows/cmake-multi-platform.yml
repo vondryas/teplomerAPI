@@ -54,6 +54,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Install autoconf (only non-Windows)
+      if: runner.os != 'Windows'
+      run: |
+        if [[ "$(uname)" == "Darwin" ]]; then
+        brew install autoconf
+        else
+        sudo apt-get update
+        sudo apt-get install -y autoconf
+        fi
 
     # Setup vcpkg
     - name: vcpkg build
@@ -73,15 +83,6 @@ jobs:
         echo "build-output-dir=$(echo "${{ github.workspace }}/build" | sed 's|\\|/|g')" >> "$GITHUB_OUTPUT"
         mkdir -p "${{ github.workspace }}/build"
 
-    - name: Install autoconf (only non-Windows)
-      if: runner.os != 'Windows'
-      run: |
-          if [[ "$(uname)" == "Darwin" ]]; then
-            brew install autoconf
-          else
-            sudo apt-get update
-            sudo apt-get install -y autoconf
-          fi
 
     # Configure CMake with secret environment variables
     - name: Configure CMake
