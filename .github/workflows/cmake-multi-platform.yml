@@ -14,7 +14,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         build_type: [Release, Debug]
-        config:
+        include:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
@@ -25,6 +25,17 @@ jobs:
             cpp_compiler: g++
             generator: "Unix Makefiles"
             vcpkg_triplet: x64-linux
+        exclude:
+          - os: windows-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+            generator: "Unix Makefiles"
+            vcpkg_triplet: x64-linux
+          - os: ubuntu-latest
+            c_compiler: cl
+            cpp_compiler: cl
+            generator: "Visual Studio 17 2022"
+            vcpkg_triplet: x64-windows
 
     steps:
     - uses: actions/checkout@v4
@@ -35,8 +46,8 @@ jobs:
       uses: johnwason/vcpkg-action@v7
       with:
         manifest-dir: ${{ github.workspace }} # Set to directory containing vcpkg.json
-        triplet: ${{ matrix.config.vcpkg_triplet }}
-        cache-key: ${{ matrix.config.os }}
+        triplet: ${{ matrix.vcpkg_triplet }}
+        cache-key: ${{ matrix.os }}
         token: ${{ github.token }}
 
 
@@ -55,12 +66,13 @@ jobs:
         DB_PASSWD: ${{ secrets.DB_PASSWD }}
       run: |
         cmake -B ${{ steps.strings.outputs.build-output-dir }} \
-          -G "${{ matrix.config.generator }}" \
-          -DCMAKE_CXX_COMPILER=${{ matrix.config.cpp_compiler }} \
-          -DCMAKE_C_COMPILER=${{ matrix.config.c_compiler }} \
+          -G "${{ matrix.generator }}" \
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -S ${{ github.workspace }}
+      shell: bash
 
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} 

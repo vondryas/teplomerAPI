@@ -1,7 +1,12 @@
-﻿cmake_minimum_required(VERSION 3.5)
+﻿cmake_minimum_required(VERSION 3.10)
 
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-    CACHE STRING "Vcpkg toolchain file")
+# vcpkg toolchain integration
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    if(not defined CMAKE_TOOLCHAIN_FILE)
+        set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            CACHE STRING "Vcpkg toolchain file")
+    endif()
+endif()
 
 project(teplomerAPI LANGUAGES CXX)
 
@@ -92,9 +97,20 @@ set(SOURCE_DIRS
     facades
 )
 
+# Include directories (include without specifying subdirectories))
+target_include_directories(${PROJECT_NAME}
+    PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/models
+)
+
+set(ALL_SOURCES)
+
+# Collect sources from source dirs and add them to all sources
 foreach(dir ${SOURCE_DIRS})
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${dir})
-        aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/${dir} ${dir}_SRC)
+        aux_source_directory(${dir} ${dir}_SRC)
+        list(APPEND ALL_SOURCES ${${dir}_SRC})
     else()
         message(WARNING "Directory ${dir} not found - skipping")
     endif()
@@ -108,28 +124,9 @@ else()
     message(STATUS "Views directory not found - skipping view generation")
 endif()
 
-# Include directories
-target_include_directories(${PROJECT_NAME}
-    PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/models
-)
 
-# Add all collected sources
-target_sources(${PROJECT_NAME}
-    PRIVATE
-    ${SRC_DIR}
-    ${CTL_SRC}
-    ${FILTER_SRC}
-    ${PLUGIN_SRC}
-    ${MODEL_SRC}
-    ${MODEL_REQUEST_SRC}
-    ${MODEL_LIST_SRC}
-    ${FACADES_SRC}
-    ${MODEL_UTILS_SRC}
-    ${CALLBACKS_SRC}
-    ${RESPONSES_SRC}
-)
+# including source files to target
+target_sources(${PROJECT_NAME} PRIVATE ${SRC_DIR} ${ALL_SOURCES})
 
 # Optional exports for dynamic loading
 option(ENABLE_DYNAMIC_VIEWS "Enable dynamic loading of views" OFF)

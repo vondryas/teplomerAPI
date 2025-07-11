@@ -7,28 +7,8 @@
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeCommandArgs": "DCMAKE_BUILD_TYPE=Release",
-      "buildCommandArgs": "",
-      "ctestCommandArgs": ""
-    },
-    {
-      "name": "Linux-Clang-Release",
-      "generator": "Ninja",
-      "configurationType": "Release",
-      "cmakeExecutable": "cmake",
-      "remoteCopySourcesExclusionList": [ ".vs", ".git", "out" ],
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "inheritEnvironments": [ "linux_clang_x64" ],
-      "remoteMachineName": "${defaultRemoteMachineName}",
-      "remoteCMakeListsRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/src",
-      "remoteBuildRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/build/${name}",
-      "remoteInstallRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/install/${name}",
-      "remoteCopySources": true,
-      "rsyncCommandArgs": "-t --delete",
-      "remoteCopyBuildOutput": false,
-      "remoteCopySourcesMethod": "rsync"
+      "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake"
     },
     {
       "name": "x64-Debug",
@@ -36,10 +16,9 @@
       "configurationType": "Debug",
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "inheritEnvironments": [ "msvc_x64_x64" ]
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake"
     }
   ]
 }
