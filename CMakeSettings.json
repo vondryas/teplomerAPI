@@ -27,12 +27,12 @@
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeExecutable": "cmake",
-      "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=/mnt/d/vcpkg/scripts/buildsystems/vcpkg.cmake",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "linux_x64" ],
       "wslPath": "Ubuntu",
-      "cmakeToolchain": "//wsl.localhost/Ubuntu/opt/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      "cmakeToolchain": "/opt/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "cmakeCommandArgs": "-DCMAKE_CXX_COMPILER=g++"
     }
   ]
 }
