@@ -14,7 +14,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         build_type: [release, debug]
-        include:
+        config:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
@@ -35,16 +35,10 @@ jobs:
       uses: johnwason/vcpkg-action@v7
       with:
         manifest-dir: ${{ github.workspace }}/../../ # Set to directory containing vcpkg.json
-        triplet: ${{ matrix.include.vcpkg_triplet }}
+        triplet: ${{ matrix.config.vcpkg_triplet }}
         cache-key: ${{ matrix.config.os }}
         token: ${{ github.token }}
 
-
-    # Install dependencies
-    - name: Install dependencies
-      run: |
-        vcpkg install drogon --triplet ${{ matrix.vcpkg_triplet }}
-        vcpkg integrate install
 
     - name: Set reusable strings
       id: strings
