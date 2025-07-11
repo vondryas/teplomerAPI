@@ -6,7 +6,7 @@
 #include <functional>
 #include <models/IDrogonModel.h>
 #include <json/json.h>
-#include <String>
+#include <string>
 #include <models/model_utils/ModelUtils.h>
 #include <controllers/responses/Response.h>
 

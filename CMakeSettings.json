@@ -19,6 +19,20 @@
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    },
+    {
+      "name": "WSL-GCC-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeExecutable": "cmake",
+      "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=/mnt/d/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "linux_x64" ],
+      "wslPath": "Ubuntu",
+      "cmakeToolchain": "//wsl.localhost/Ubuntu/opt/vcpkg/scripts/buildsystems/vcpkg.cmake"
     }
   ]
 }
