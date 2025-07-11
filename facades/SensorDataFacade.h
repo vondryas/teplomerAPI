@@ -24,7 +24,7 @@ namespace facade
 		void hello() const;
 		void getById(const int32_t id,const SingleRowCallback& callback,const DbErrorCallback& err) const;
 		void getAll(const MultipleRowsCallback& callback, const DbErrorCallback& err) const;
-		void getPaginated(const uint32_t page, const uint32_t limit, const MultipleRowsCallback& callback,const DbErrorCallback& err) const;
+		void getPaginated(const size_t page, const size_t limit, const MultipleRowsCallback& callback,const DbErrorCallback& err) const;
 		void create(const request_model::SensorData& data, const SingleRowCallback& callback, const DbErrorCallback& err) const;
 		void update(const request_model::SensorData& data, const CountCallback& callback, const DbErrorCallback& err) const;
 		void deleteById(const int32_t id, const CountCallback& callback, const DbErrorCallback& err) const;

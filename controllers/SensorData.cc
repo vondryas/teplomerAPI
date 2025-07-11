@@ -7,6 +7,7 @@
 
 #include "SensorData.h"
 #include <string>
+#include <fmt/core.h>
 
 void SensorData::get(const HttpRequestPtr& req,
 	std::function<void(const HttpResponsePtr&)>&& callback)
@@ -25,12 +26,12 @@ void SensorData::get(const HttpRequestPtr& req,
 		}
 		catch (const std::invalid_argument& e) {
 			LOG_ERROR << "Invalid id parameter: " << idStr;
-			responses::wrongRequestResponse("Invalid id parameter", callback);
+			responses::wrongRequestResponse(fmt::format("Invalid id parameter. Error: {}", e.what()), callback);
 			return;
 		}
 		catch (const std::out_of_range& e) {
 			LOG_ERROR << "Id parameter out of range: " << idStr;
-			responses::wrongRequestResponse("Id parameter out of range", callback);
+			responses::wrongRequestResponse(fmt::format("Id parameter out of range. Error: {}", e.what()), callback);
 			return;
 		}
 		LOG_DEBUG << "Fetching SensorData with id: " << id;
@@ -67,7 +68,7 @@ void SensorData::get(const HttpRequestPtr& req,
 			}
 		}
 		catch (const std::invalid_argument& e) {
-			LOG_ERROR << "Invalid limit parameter: " << limitStr;
+			LOG_ERROR << "Invalid limit parameter: " << limitStr << e.what();
 			responses::wrongRequestResponse("Invalid limit parameter", callback);
 			return;
 		}

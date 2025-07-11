@@ -58,7 +58,7 @@ jobs:
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        echo "build-output-dir=$(echo "${{ github.workspace }}/build" | sed 's|\\|/|g')" >> "$GITHUB_OUTPUT"
 
     # Configure CMake with secret environment variables
     - name: Configure CMake

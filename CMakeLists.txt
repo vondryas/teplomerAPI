@@ -65,6 +65,10 @@ else()
     message(STATUS "Using system-installed Drogon")
 endif()
 
+# fmt
+find_package(fmt CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
+
 # Database configuration with cross-platform environment variable handling
 function(check_required_env_var var_name)
     if(DEFINED ENV{${var_name}})

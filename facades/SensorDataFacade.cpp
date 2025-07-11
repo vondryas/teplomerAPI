@@ -16,7 +16,7 @@ void facade::SensorDataFacade::getAll(const MultipleRowsCallback& callback, cons
 }
 
 
-void facade::SensorDataFacade::getPaginated(const uint32_t page, const uint32_t limit, const MultipleRowsCallback& callback, const DbErrorCallback& err) const
+void facade::SensorDataFacade::getPaginated(const size_t page, const size_t limit, const MultipleRowsCallback& callback, const DbErrorCallback& err) const
 {
 	mapper_->paginate(page,limit).findAll(
 		callback,
