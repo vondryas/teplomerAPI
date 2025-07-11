@@ -18,7 +18,8 @@
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
-      "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "intelliSenseMode": "linux-gcc-x64"
     },
     {
       "name": "WSL-GCC-Release",
