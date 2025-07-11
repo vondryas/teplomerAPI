@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../IDrogonModel.h"
-#include <JSON/json.h>
+#include <json/json.h>
 #include <string>
 #include <vector>
 

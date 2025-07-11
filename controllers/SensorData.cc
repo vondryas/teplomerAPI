@@ -8,6 +8,7 @@
 #include "SensorData.h"
 #include <string>
 #include <fmt/core.h>
+#include <cstdlib> 
 
 void SensorData::get(const HttpRequestPtr& req,
 	std::function<void(const HttpResponsePtr&)>&& callback)
