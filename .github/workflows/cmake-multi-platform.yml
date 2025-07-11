@@ -81,7 +81,7 @@ jobs:
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWD: ${{ secrets.DB_PASSWD }}
       run: |
-        # Sestavení pøíkazu s Windows-style cestami
+        
         read -r -d '' CMD <<'EOF'
             cmake -B ${{ steps.strings.outputs.build-output-dir }} \
             -G "${{ matrix.generator }}" \
@@ -92,7 +92,6 @@ jobs:
             -S ${{ github.workspace }}
         EOF
 
-        # Nahrazení všech \ za /, kromì tìch na konci øádku
         CMD_FIXED=$(echo "$CMD" | sed -E 's/\\([^n]|$)/\/\1/g')
 
         echo "Executing CMake:"
