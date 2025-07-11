@@ -16,26 +16,29 @@ jobs:
         build_type: [Release, Debug]
         include:
           - os: windows-latest
+            build_type: Release
             c_compiler: cl
             cpp_compiler: cl
             generator: "Visual Studio 17 2022"
             vcpkg_triplet: x64-windows
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-            generator: "Unix Makefiles"
-            vcpkg_triplet: x64-linux
-        exclude:
           - os: windows-latest
+            build_type: Debug
+            c_compiler: cl
+            cpp_compiler: cl
+            generator: "Visual Studio 17 2022"
+            vcpkg_triplet: x64-windows
+          - os: ubuntu-latest
+            build_type: Release
             c_compiler: gcc
             cpp_compiler: g++
             generator: "Unix Makefiles"
             vcpkg_triplet: x64-linux
           - os: ubuntu-latest
-            c_compiler: cl
-            cpp_compiler: cl
-            generator: "Visual Studio 17 2022"
-            vcpkg_triplet: x64-windows
+            build_type: Debug
+            c_compiler: gcc
+            cpp_compiler: g++
+            generator: "Unix Makefiles"
+            vcpkg_triplet: x64-linux
 
     steps:
     - uses: actions/checkout@v4
