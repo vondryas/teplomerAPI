@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         build_type: [Release, Debug]
         include:
           - os: windows-latest
@@ -39,6 +39,18 @@ jobs:
             cpp_compiler: g++
             generator: "Unix Makefiles"
             vcpkg_triplet: x64-linux
+          - os: macos-latest
+            build_type: Release
+            c_compiler: clang
+            cpp_compiler: clang++
+            generator: "Unix Makefiles"
+            vcpkg_triplet: x64-osx
+          - os: macos-latest
+            build_type: Debug
+            c_compiler: clang
+            cpp_compiler: clang++
+            generator: "Unix Makefiles"
+            vcpkg_triplet: x64-osx
 
     steps:
     - uses: actions/checkout@v4
