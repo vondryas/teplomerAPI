@@ -35,7 +35,7 @@ jobs:
       uses: johnwason/vcpkg-action@v7
       with:
         manifest-dir: ${{ github.workspace }}/../../ # Set to directory containing vcpkg.json
-        triplet: ${{ matrix.config.vcpkg_triplet }}
+        triplet: ${{ matrix.include.vcpkg_triplet }}
         cache-key: ${{ matrix.config.os }}
         token: ${{ github.token }}
 
