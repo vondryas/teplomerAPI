@@ -20,6 +20,9 @@ elseif(APPLE)
 else()
     message(STATUS "Building on unknown platform")
 endif()
+set(CMAKE_CXX_STANDARD 20)  # Nebo 23, pokud používáte C++23
+
+
 
 # C++ standard detection with fallback
 include(CheckIncludeFileCXX)
@@ -27,6 +30,7 @@ include(CheckIncludeFileCXX)
 check_include_file_cxx(any HAS_ANY)
 check_include_file_cxx(string_view HAS_STRING_VIEW)
 check_include_file_cxx(coroutine HAS_COROUTINE)
+unset(CMAKE_REQUIRED_FLAGS)
 
 if(NOT CMAKE_CXX_STANDARD)
     if(HAS_ANY AND HAS_STRING_VIEW AND HAS_COROUTINE)

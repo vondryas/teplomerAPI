@@ -33,7 +33,23 @@
       "inheritEnvironments": [ "linux_x64" ],
       "wslPath": "Ubuntu",
       "cmakeToolchain": "/opt/vcpkg/scripts/buildsystems/vcpkg.cmake",
-      "cmakeCommandArgs": "-DCMAKE_CXX_COMPILER=g++"
+      "cmakeCommandArgs": "-DCMAKE_CXX_COMPILER=g++",
+      "intelliSenseMode": "linux-gcc-x64"
+    },
+    {
+      "name": "WSL-GCC-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeExecutable": "cmake",
+      "cmakeCommandArgs": "-DCMAKE_CXX_COMPILER=g++",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "cmakeToolchain": "/opt/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "inheritEnvironments": [ "linux_x64" ],
+      "wslPath": "Ubuntu",
+      "variables": []
     }
   ]
 }

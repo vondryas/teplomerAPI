@@ -4,7 +4,8 @@
       "name": "drogon",
       "features": [
         "orm",
-        "postgres"
+        "postgres",
+        "ctl"
       ]
     },
     "jsoncpp",

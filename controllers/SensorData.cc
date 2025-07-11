@@ -89,37 +89,6 @@ void SensorData::get(const HttpRequestPtr& req,
 	}
 }
 
-void SensorData::create(const HttpRequestPtr& req,
-	std::function<void(const HttpResponsePtr&)>&& callback,
-	request_model::SensorData&& data)
-{
-	orm::DbClientPtr dbClient = drogon::app().getDbClient();
-	if (!dbClient)
-	{
-		LOG_ERROR << "No database client available";
-		auto resp = drogon::HttpResponse::newHttpResponse();
-		resp->setStatusCode(drogon::k500InternalServerError);
-		resp->setContentTypeCode(drogon::CT_TEXT_PLAIN);
-		resp->setBody("Database client not available");
-		callback(resp);
-		return;
-	}
-	orm::Mapper<drogon_model::teplomer_db::SensorData> mapper(dbClient);
-	mapper.findAll(
-		[callback](const std::vector<drogon_model::teplomer_db::SensorData>& rcb) {
-
-			LOG_DEBUG << "SensorData found: ";
-
-			auto resp = drogon::HttpResponse::newHttpResponse();
-			resp->setStatusCode(drogon::k200OK);
-			resp->setContentTypeCode(drogon::CT_TEXT_PLAIN);
-			resp->setBody("ok");
-			callback(resp);
-		},
-		onError(callback)
-	);
-
-}
 
 void SensorData::updateOne(const HttpRequestPtr& req,
 	std::function<void(const HttpResponsePtr&)>&& callback,
@@ -147,4 +116,30 @@ void SensorData::deleteOne(const HttpRequestPtr& req,
 	std::function<void(const HttpResponsePtr&)>&& callback,
 	std::string&& id)
 {
+}
+
+Task<HttpResponsePtr> SensorData::create(const HttpRequestPtr req, const request_model::SensorData& data)
+{
+	orm::DbClientPtr dbClient = drogon::app().getDbClient();
+	orm::CoroMapper<drogon_model::teplomer_db::SensorData> mapper(dbClient);
+	LOG_DEBUG << "HERE";
+	std::any list;
+	try {
+		list = co_await mapper.findAll();
+
+	}
+	catch (const drogon::orm::DrogonDbException& e) {
+		LOG_ERROR << "Database error: " << e.base().what();
+		auto resp = drogon::HttpResponse::newHttpResponse();
+		resp->setStatusCode(drogon::k500InternalServerError);
+		resp->setContentTypeCode(drogon::CT_TEXT_PLAIN);
+		resp->setBody("Database error");
+		co_return resp;
+	}
+	LOG_DEBUG << "DONE";
+	auto resp = drogon::HttpResponse::newHttpJsonResponse(toJson(std::any_cast<std::vector< drogon_model::teplomer_db::SensorData>>(list)));
+	resp->setStatusCode(drogon::k200OK);
+	resp->setBody(toJson(std::any_cast<std::vector< drogon_model::teplomer_db::SensorData>>(list)).toStyledString());
+
+	co_return resp;
 }
