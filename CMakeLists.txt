@@ -1,4 +1,8 @@
 ﻿cmake_minimum_required(VERSION 3.5)
+
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    CACHE STRING "Vcpkg toolchain file")
+
 project(teplomerAPI LANGUAGES CXX)
 
 # Platform detection
