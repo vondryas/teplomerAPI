@@ -82,15 +82,14 @@ jobs:
         DB_PASSWD: ${{ secrets.DB_PASSWD }}
       run: |
         
-        read -r -d '' CMD <<'EOF'
-            cmake -B ${{ steps.strings.outputs.build-output-dir }} \
+        CMD="cmake -B ${{ steps.strings.outputs.build-output-dir }} \
             -G "${{ matrix.generator }}" \
             -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
             -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
             -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
-            -S ${{ github.workspace }}
-        EOF
+            -S ${{ github.workspace }}"
+        
 
         CMD_FIXED=$(echo "$CMD" | sed -E 's/\\([^n]|$)/\/\1/g')
 
