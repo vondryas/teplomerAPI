@@ -10,136 +10,90 @@
 #include <fmt/core.h>
 #include <cstdlib> 
 
-void SensorData::get(const HttpRequestPtr& req,
-	std::function<void(const HttpResponsePtr&)>&& callback)
-{
-	int32_t id = 0;
-	size_t page = 0;
-	size_t limit = 20;
-	LOG_DEBUG << "SensorData::get called";
-	facade_->hello();
-	std::string idStr = req->getParameter("id");
-	if (!idStr.empty())
-	{
-		try {
 
-			id = std::stoi(idStr);
-		}
-		catch (const std::invalid_argument& e) {
-			LOG_ERROR << "Invalid id parameter: " << idStr;
-			responses::wrongRequestResponse(fmt::format("Invalid id parameter. Error: {}", e.what()), callback);
-			return;
-		}
-		catch (const std::out_of_range& e) {
-			LOG_ERROR << "Id parameter out of range: " << idStr;
-			responses::wrongRequestResponse(fmt::format("Id parameter out of range. Error: {}", e.what()), callback);
-			return;
-		}
-		LOG_DEBUG << "Fetching SensorData with id: " << id;
-		facade_->getById(id, onSingleRow(callback), onError(callback));
-		return;
+Task<HttpResponsePtr> SensorData::getById(const HttpRequestPtr req, const std::string& idStr)
+{
+	HttpResponsePtr resp = nullptr;
+	if (idStr.empty())
+	{
+		LOG_ERROR << "Id parameter is empty";
+		co_return responses::wrongRequestResponse("Id parameter is required");
+	}
+	auto id = tryParse<int32_t>(idStr, "Id", resp);
+	if (!id.has_value())
+		co_return resp;
+
+	LOG_DEBUG << "Fetching SensorData with id: " << idStr;
+
+	auto data = co_await coroTryFacadeCall(facade_->getById(id.value()), "getById", idStr, resp);
+	if (!data.has_value()) {
+		co_return resp;
 	}
 
+	co_return responses::JsonOkResponse(data->toJson());
+}
+
+
+
+Task<HttpResponsePtr> SensorData::get(const HttpRequestPtr req)
+{
+	HttpResponsePtr resp = nullptr;
+	std::optional<size_t> page = 1;
+	std::optional<size_t> limit = 20;
 	std::string pageStr = req->getParameter("page");
 	LOG_DEBUG << "page" << pageStr;
 	std::string limitStr = req->getParameter("limit");
 	LOG_DEBUG << "limit" << limitStr;
-
+	std::optional<mvector<drogon_model::teplomer_db::SensorData>> dataList;
 	if (!pageStr.empty() || !limitStr.empty())
 	{
-		try {
-			if (!pageStr.empty())
-			{
-				page = std::stoul(pageStr);
-			}
+		if (!pageStr.empty())
+		{
+			page = tryParse<size_t>(pageStr, "Page", resp);
+			if (!page.has_value())
+				co_return resp;
 		}
-		catch (const std::invalid_argument& e) {
-			responses::wrongRequestResponse("Invalid page parameter", callback);
-			return;
+
+		if (!limitStr.empty())
+		{
+			limit = tryParse<size_t>(limitStr, "Limit", resp);
+			if (!page.has_value())
+				co_return resp;
 		}
-		catch (const std::out_of_range& e) {
-			LOG_ERROR << "Page parameter out of range: " << pageStr;
-			responses::wrongRequestResponse("Page parameter out of range", callback);
-			return;
-		}
-		try {
-			if (!limitStr.empty())
-			{
-				limit = std::stoul(limitStr);
-			}
-		}
-		catch (const std::invalid_argument& e) {
-			LOG_ERROR << "Invalid limit parameter: " << limitStr << e.what();
-			responses::wrongRequestResponse("Invalid limit parameter", callback);
-			return;
-		}
-		catch (const std::out_of_range& e) {
-			LOG_ERROR << "Limit parameter out of range: " << limitStr;
-			responses::wrongRequestResponse("Limit parameter out of range", callback);
-			return;
-		}
-		facade_->getPaginated(page, limit,
-			onMultipleRows(callback),
-			onError(callback));
+		UUID
+
+		dataList = co_await coroTryFacadeCall(
+			facade_->getPaginated(page.value(), limit.value()),
+			"getAll",
+			fmt::format("page: {}, limit: {}", page.value(), limit.value()),
+			resp
+		);
 	}
 	else
 	{
-		facade_->getAll(onMultipleRows(callback),
-			onError(callback));
+		dataList = co_await coroTryFacadeCall(facade_->getAll(), "getAll", "none", resp);
+		if (!dataList.has_value()) {
+			co_return resp;
+		}
 	}
+
+	co_return responses::JsonOkResponse(dataList->toJson());
 }
 
 
-void SensorData::updateOne(const HttpRequestPtr& req,
-	std::function<void(const HttpResponsePtr&)>&& callback,
-	request_model::SensorData&& data)
+
+
+Task<HttpResponsePtr> SensorData::updateOne(const HttpRequestPtr req, const request_model::SensorData& data)
 {
-	LOG_DEBUG << "SensorData::updateOne called with id: " << data.id;
-	LOG_INFO << data.isEmpty();
-	if (data.isEmpty())
-	{
-		auto resp = drogon::HttpResponse::newHttpResponse();
-		resp->setStatusCode(drogon::k400BadRequest);
-		resp->setContentTypeCode(drogon::CT_TEXT_PLAIN);
-		resp->setBody("Invalid request");
-		callback(resp);
-		return;
-	}
-	auto resp = drogon::HttpResponse::newHttpResponse();
-	resp->setStatusCode(drogon::k200OK);
-	resp->setContentTypeCode(drogon::CT_TEXT_PLAIN);
-	resp->setBody("ok");
-	callback(resp);
+	co_return drogon::HttpResponse::newHttpResponse();
 }
 
-void SensorData::deleteOne(const HttpRequestPtr& req,
-	std::function<void(const HttpResponsePtr&)>&& callback,
-	std::string&& id)
+Task<HttpResponsePtr> SensorData::deleteOne(const HttpRequestPtr req, const std::string& id)
 {
+	co_return drogon::HttpResponse::newHttpResponse();
 }
 
 Task<HttpResponsePtr> SensorData::create(const HttpRequestPtr req, const request_model::SensorData& data)
 {
-	orm::DbClientPtr dbClient = drogon::app().getDbClient();
-	orm::CoroMapper<drogon_model::teplomer_db::SensorData> mapper(dbClient);
-	LOG_DEBUG << "HERE";
-	std::any list;
-	try {
-		list = co_await mapper.findAll();
-
-	}
-	catch (const drogon::orm::DrogonDbException& e) {
-		LOG_ERROR << "Database error: " << e.base().what();
-		auto resp = drogon::HttpResponse::newHttpResponse();
-		resp->setStatusCode(drogon::k500InternalServerError);
-		resp->setContentTypeCode(drogon::CT_TEXT_PLAIN);
-		resp->setBody("Database error");
-		co_return resp;
-	}
-	LOG_DEBUG << "DONE";
-	auto resp = drogon::HttpResponse::newHttpJsonResponse(toJson(std::any_cast<std::vector< drogon_model::teplomer_db::SensorData>>(list)));
-	resp->setStatusCode(drogon::k200OK);
-	resp->setBody(toJson(std::any_cast<std::vector< drogon_model::teplomer_db::SensorData>>(list)).toStyledString());
-
-	co_return resp;
+	co_return drogon::HttpResponse::newHttpResponse();;
 }

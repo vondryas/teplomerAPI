@@ -19,7 +19,7 @@
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "cmakeCommandArgs": "-DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake",
-      "intelliSenseMode": "linux-gcc-x64"
+      "intelliSenseMode": "windows-msvc-x64"
     },
     {
       "name": "WSL-GCC-Release",
@@ -48,8 +48,7 @@
       "ctestCommandArgs": "",
       "cmakeToolchain": "/opt/vcpkg/scripts/buildsystems/vcpkg.cmake",
       "inheritEnvironments": [ "linux_x64" ],
-      "wslPath": "Ubuntu",
-      "variables": []
+      "wslPath": "Ubuntu"
     }
   ]
 }

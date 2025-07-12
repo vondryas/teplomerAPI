@@ -2,6 +2,7 @@
 
 #include <drogon/orm/DbClient.h>
 #include <drogon/drogon.h>
+#include <drogon/orm/CoroMapper.h>
 
 namespace facade
 {
@@ -10,11 +11,9 @@ namespace facade
 	public:
 		FacadeBase() {
 			LOG_INFO << "OK";
-			dbClient_ = drogon::app().getDbClient();
 		}
 		virtual ~FacadeBase() = default;
 	protected:
-		drogon::orm::DbClientPtr dbClient_;
 		
 	};
 }

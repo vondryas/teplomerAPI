@@ -1,35 +1,33 @@
 #pragma once
 #include "FacadeBase.h"
-#include <controllers/callbacks/ICallbackBase.h>
 #include <functional>
 #include <models/SensorData.h>
 #include <models/request/SensorDataRequest.h>
 #include <drogon/orm/Mapper.h>
+#include <drogon/orm/CoroMapper.h>
+#include <models/model_utils/mvector.h>
 
-
+using namespace drogon;
 namespace facade
 {
 	class SensorDataFacade : public FacadeBase
 	{
-		using SingleRowCallback =  SingleRowCallback<drogon_model::teplomer_db::SensorData>;
-		using MultipleRowsCallback = MultipleRowsCallback<drogon_model::teplomer_db::SensorData>;
+		using SensorData = drogon_model::teplomer_db::SensorData;
 	public:
 		// Type aliases for callback functions
 
-		SensorDataFacade() : FacadeBase()
+		SensorDataFacade()
 		{
-			mapper_ = std::make_shared<drogon::orm::Mapper<drogon_model::teplomer_db::SensorData>>(dbClient_);
 		}
 
 		void hello() const;
-		void getById(const int32_t id,const SingleRowCallback& callback,const DbErrorCallback& err) const;
-		void getAll(const MultipleRowsCallback& callback, const DbErrorCallback& err) const;
-		void getPaginated(const size_t page, const size_t limit, const MultipleRowsCallback& callback,const DbErrorCallback& err) const;
-		void create(const request_model::SensorData& data, const SingleRowCallback& callback, const DbErrorCallback& err) const;
-		void update(const request_model::SensorData& data, const CountCallback& callback, const DbErrorCallback& err) const;
-		void deleteById(const int32_t id, const CountCallback& callback, const DbErrorCallback& err) const;
+		Task<SensorData> getById(const int32_t id) const; // Use drogon::Task
+		Task<mvector<SensorData>> getAll() const;
+		Task<mvector<SensorData>> getPaginated(const size_t page, const size_t limit) const;
+		Task<SensorData> create(const request_model::SensorData& data) const;
+		Task<size_t> update(const request_model::SensorData& data) const;
+		Task<size_t> deleteById(const int32_t id) const;
 
 	private:
-		std::shared_ptr<drogon::orm::Mapper<drogon_model::teplomer_db::SensorData>> mapper_;
 	};
 }

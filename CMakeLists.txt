@@ -47,9 +47,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Verify C++ standard
 if(CMAKE_CXX_STANDARD LESS 17)
-    message(FATAL_ERROR "C++17 or higher is required")
+    message(FATAL_ERROR "C++20 or higher is required")
 elseif(CMAKE_CXX_STANDARD LESS 20)
-    message(STATUS "Using C++17")
+    message(FATAL_ERROR "Using C++20 or higher is required")
 else()
     message(STATUS "Using C++20")
 endif()
@@ -93,8 +93,9 @@ configure_file(${CMAKE_SOURCE_DIR}/config_template.json
 
 # Source file collection with platform-specific considerations
 set(SOURCE_DIRS
+    
     controllers
-    controllers/callbacks
+    controllers/exceptionWrapper
     controllers/responses
     filters
     plugins

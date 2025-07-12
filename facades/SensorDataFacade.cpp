@@ -1,37 +1,46 @@
-#include "SensorDataFacade.h"
+#include "SensorDataFacade.h"  
+#include <drogon/orm/CoroMapper.h>  
+#include <drogon/orm/Exception.h>  
 
-void facade::SensorDataFacade::hello() const
-{
-	LOG_INFO << "HELLO";
-}
+using SensorData = drogon_model::teplomer_db::SensorData;  
 
-void facade::SensorDataFacade::getById(const int32_t id, const SingleRowCallback& callback, const DbErrorCallback& err) const
-{
-	mapper_->findByPrimaryKey(id, callback, err);
-}
+void facade::SensorDataFacade::hello() const  
+{  
+    LOG_INFO << "HELLO";  
+}  
 
-void facade::SensorDataFacade::getAll(const MultipleRowsCallback& callback, const DbErrorCallback& err) const
-{
-	mapper_->findAll(callback, err);
-}
+Task<SensorData> facade::SensorDataFacade::getById(const int32_t id) const  
+{  
+    auto mapper = drogon::orm::CoroMapper<SensorData>(drogon::app().getFastDbClient());  
+    co_return co_await mapper.findByPrimaryKey(id);  
+}  
 
+Task<mvector<SensorData>> facade::SensorDataFacade::getAll() const  
+{  
+    auto mapper = drogon::orm::CoroMapper<SensorData>(drogon::app().getFastDbClient());  
+    auto data = co_await mapper.findAll();  
+    co_return mvector<SensorData>(data);  
+}  
 
-void facade::SensorDataFacade::getPaginated(const size_t page, const size_t limit, const MultipleRowsCallback& callback, const DbErrorCallback& err) const
-{
-	mapper_->paginate(page,limit).findAll(
-		callback,
-		err
-	);
-}
+Task<mvector<SensorData>> facade::SensorDataFacade::getPaginated(const size_t page, const size_t limit) const  
+{  
+    auto mapper = drogon::orm::CoroMapper<SensorData>(drogon::app().getFastDbClient());  
+    auto data = co_await mapper.paginate(page, limit).findAll();  
+    co_return mvector<SensorData>(data);  
+}  
 
-void facade::SensorDataFacade::create(const request_model::SensorData& data, const SingleRowCallback& callback, const DbErrorCallback& err) const
-{
-}
+Task<SensorData> facade::SensorDataFacade::create(const request_model::SensorData& data) const  
+{  
+    auto mapper = drogon::orm::CoroMapper<SensorData>(drogon::app().getFastDbClient());  
+    co_return co_await mapper.findByPrimaryKey(1);  
+}  
 
-void facade::SensorDataFacade::update(const request_model::SensorData& data, const CountCallback& callback, const DbErrorCallback& err) const
-{
-}
+Task<size_t> facade::SensorDataFacade::update(const request_model::SensorData& data) const  
+{  
+    co_return 1;  
+}  
 
-void facade::SensorDataFacade::deleteById(const int32_t id, const CountCallback& callback, const DbErrorCallback& err) const
-{
+Task<size_t> facade::SensorDataFacade::deleteById(const int32_t id) const  
+{  
+    co_return 1;  
 }
