@@ -15,6 +15,7 @@
 #include <drogon/orm/CoroMapper.h>
 #include <controllers/exceptionWrapper/TryNumberParsing.h>
 #include <controllers/exceptionWrapper/TryFacadeCall.h>
+#include <stduuid/uuid.h>
 
 
 using namespace drogon;

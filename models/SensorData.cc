@@ -18,22 +18,20 @@ const std::string SensorData::Cols::_battery = "\"battery\"";
 const std::string SensorData::Cols::_temperature = "\"temperature\"";
 const std::string SensorData::Cols::_humidity = "\"humidity\"";
 const std::string SensorData::Cols::_pressure = "\"pressure\"";
-const std::string SensorData::Cols::_date = "\"date\"";
-const std::string SensorData::Cols::_time = "\"time\"";
+const std::string SensorData::Cols::_measured_at = "\"measured_at\"";
 const std::string SensorData::Cols::_created_at = "\"created_at\"";
 const std::string SensorData::primaryKeyName = "id";
 const bool SensorData::hasPrimaryKey = true;
 const std::string SensorData::tableName = "\"sensor_data\"";
 
 const std::vector<typename SensorData::MetaData> SensorData::metaData_={
-{"id","int32_t","integer",4,1,1,1},
+{"id","std::string","uuid",0,0,1,1},
 {"battery","int32_t","integer",4,0,0,1},
-{"temperature","std::string","numeric",0,0,0,1},
-{"humidity","std::string","numeric",0,0,0,1},
-{"pressure","std::string","numeric",0,0,0,1},
-{"date","::trantor::Date","date",0,0,0,1},
-{"time","std::string","time without time zone",0,0,0,1},
-{"created_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+{"temperature","double","double precision",8,0,0,1},
+{"humidity","double","double precision",8,0,0,1},
+{"pressure","double","double precision",8,0,0,1},
+{"measured_at","::trantor::Date","timestamp without time zone",0,0,0,1},
+{"created_at","::trantor::Date","timestamp without time zone",0,0,0,1}
 };
 const std::string &SensorData::getColumnName(size_t index) noexcept(false)
 {
@@ -46,7 +44,7 @@ SensorData::SensorData(const Row &r, const ssize_t indexOffset) noexcept
     {
         if(!r["id"].isNull())
         {
-            id_=std::make_shared<int32_t>(r["id"].as<int32_t>());
+            id_=std::make_shared<std::string>(r["id"].as<std::string>());
         }
         if(!r["battery"].isNull())
         {
@@ -54,28 +52,37 @@ SensorData::SensorData(const Row &r, const ssize_t indexOffset) noexcept
         }
         if(!r["temperature"].isNull())
         {
-            temperature_=std::make_shared<std::string>(r["temperature"].as<std::string>());
+            temperature_=std::make_shared<double>(r["temperature"].as<double>());
         }
         if(!r["humidity"].isNull())
         {
-            humidity_=std::make_shared<std::string>(r["humidity"].as<std::string>());
+            humidity_=std::make_shared<double>(r["humidity"].as<double>());
         }
         if(!r["pressure"].isNull())
         {
-            pressure_=std::make_shared<std::string>(r["pressure"].as<std::string>());
+            pressure_=std::make_shared<double>(r["pressure"].as<double>());
         }
-        if(!r["date"].isNull())
+        if(!r["measured_at"].isNull())
         {
-            auto daysStr = r["date"].as<std::string>();
+            auto timeStr = r["measured_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
-            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
-            date_=std::make_shared<::trantor::Date>(t*1000000);
-        }
-        if(!r["time"].isNull())
-        {
-            time_=std::make_shared<std::string>(r["time"].as<std::string>());
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                measuredAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
         if(!r["created_at"].isNull())
         {
@@ -103,7 +110,7 @@ SensorData::SensorData(const Row &r, const ssize_t indexOffset) noexcept
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 8 > r.size())
+        if(offset + 7 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -112,7 +119,7 @@ SensorData::SensorData(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 0;
         if(!r[index].isNull())
         {
-            id_=std::make_shared<int32_t>(r[index].as<int32_t>());
+            id_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 1;
         if(!r[index].isNull())
@@ -122,34 +129,42 @@ SensorData::SensorData(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 2;
         if(!r[index].isNull())
         {
-            temperature_=std::make_shared<std::string>(r[index].as<std::string>());
+            temperature_=std::make_shared<double>(r[index].as<double>());
         }
         index = offset + 3;
         if(!r[index].isNull())
         {
-            humidity_=std::make_shared<std::string>(r[index].as<std::string>());
+            humidity_=std::make_shared<double>(r[index].as<double>());
         }
         index = offset + 4;
         if(!r[index].isNull())
         {
-            pressure_=std::make_shared<std::string>(r[index].as<std::string>());
+            pressure_=std::make_shared<double>(r[index].as<double>());
         }
         index = offset + 5;
         if(!r[index].isNull())
         {
-            auto daysStr = r[index].as<std::string>();
+            auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
-            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
-            date_=std::make_shared<::trantor::Date>(t*1000000);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                measuredAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
         index = offset + 6;
-        if(!r[index].isNull())
-        {
-            time_=std::make_shared<std::string>(r[index].as<std::string>());
-        }
-        index = offset + 7;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -178,7 +193,7 @@ SensorData::SensorData(const Row &r, const ssize_t indexOffset) noexcept
 
 SensorData::SensorData(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 8)
+    if(pMasqueradingVector.size() != 7)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -188,7 +203,7 @@ SensorData::SensorData(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[0] = true;
         if(!pJson[pMasqueradingVector[0]].isNull())
         {
-            id_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[0]].asInt64());
+            id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
@@ -204,7 +219,7 @@ SensorData::SensorData(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            temperature_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
+            temperature_=std::make_shared<double>(pJson[pMasqueradingVector[2]].asDouble());
         }
     }
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
@@ -212,7 +227,7 @@ SensorData::SensorData(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            humidity_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+            humidity_=std::make_shared<double>(pJson[pMasqueradingVector[3]].asDouble());
         }
     }
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
@@ -220,7 +235,7 @@ SensorData::SensorData(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            pressure_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
+            pressure_=std::make_shared<double>(pJson[pMasqueradingVector[4]].asDouble());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -228,12 +243,25 @@ SensorData::SensorData(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            auto daysStr = pJson[pMasqueradingVector[5]].asString();
+            auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
-            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
-            date_=std::make_shared<::trantor::Date>(t*1000000);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                measuredAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -241,15 +269,7 @@ SensorData::SensorData(const Json::Value &pJson, const std::vector<std::string> 
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            time_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
-        }
-    }
-    if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
-    {
-        dirtyFlag_[7] = true;
-        if(!pJson[pMasqueradingVector[7]].isNull())
-        {
-            auto timeStr = pJson[pMasqueradingVector[7]].asString();
+            auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -279,7 +299,7 @@ SensorData::SensorData(const Json::Value &pJson) noexcept(false)
         dirtyFlag_[0]=true;
         if(!pJson["id"].isNull())
         {
-            id_=std::make_shared<int32_t>((int32_t)pJson["id"].asInt64());
+            id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
     if(pJson.isMember("battery"))
@@ -295,7 +315,7 @@ SensorData::SensorData(const Json::Value &pJson) noexcept(false)
         dirtyFlag_[2]=true;
         if(!pJson["temperature"].isNull())
         {
-            temperature_=std::make_shared<std::string>(pJson["temperature"].asString());
+            temperature_=std::make_shared<double>(pJson["temperature"].asDouble());
         }
     }
     if(pJson.isMember("humidity"))
@@ -303,7 +323,7 @@ SensorData::SensorData(const Json::Value &pJson) noexcept(false)
         dirtyFlag_[3]=true;
         if(!pJson["humidity"].isNull())
         {
-            humidity_=std::make_shared<std::string>(pJson["humidity"].asString());
+            humidity_=std::make_shared<double>(pJson["humidity"].asDouble());
         }
     }
     if(pJson.isMember("pressure"))
@@ -311,33 +331,38 @@ SensorData::SensorData(const Json::Value &pJson) noexcept(false)
         dirtyFlag_[4]=true;
         if(!pJson["pressure"].isNull())
         {
-            pressure_=std::make_shared<std::string>(pJson["pressure"].asString());
+            pressure_=std::make_shared<double>(pJson["pressure"].asDouble());
         }
     }
-    if(pJson.isMember("date"))
+    if(pJson.isMember("measured_at"))
     {
         dirtyFlag_[5]=true;
-        if(!pJson["date"].isNull())
+        if(!pJson["measured_at"].isNull())
         {
-            auto daysStr = pJson["date"].asString();
+            auto timeStr = pJson["measured_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
-            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
-            date_=std::make_shared<::trantor::Date>(t*1000000);
-        }
-    }
-    if(pJson.isMember("time"))
-    {
-        dirtyFlag_[6]=true;
-        if(!pJson["time"].isNull())
-        {
-            time_=std::make_shared<std::string>(pJson["time"].asString());
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                measuredAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
     }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[7]=true;
+        dirtyFlag_[6]=true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -366,7 +391,7 @@ SensorData::SensorData(const Json::Value &pJson) noexcept(false)
 void SensorData::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 8)
+    if(pMasqueradingVector.size() != 7)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -375,7 +400,7 @@ void SensorData::updateByMasqueradedJson(const Json::Value &pJson,
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
         {
-            id_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[0]].asInt64());
+            id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
@@ -391,7 +416,7 @@ void SensorData::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            temperature_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
+            temperature_=std::make_shared<double>(pJson[pMasqueradingVector[2]].asDouble());
         }
     }
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
@@ -399,7 +424,7 @@ void SensorData::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            humidity_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+            humidity_=std::make_shared<double>(pJson[pMasqueradingVector[3]].asDouble());
         }
     }
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
@@ -407,7 +432,7 @@ void SensorData::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            pressure_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
+            pressure_=std::make_shared<double>(pJson[pMasqueradingVector[4]].asDouble());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -415,12 +440,25 @@ void SensorData::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            auto daysStr = pJson[pMasqueradingVector[5]].asString();
+            auto timeStr = pJson[pMasqueradingVector[5]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
-            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
-            date_=std::make_shared<::trantor::Date>(t*1000000);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                measuredAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -428,15 +466,7 @@ void SensorData::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            time_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
-        }
-    }
-    if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
-    {
-        dirtyFlag_[7] = true;
-        if(!pJson[pMasqueradingVector[7]].isNull())
-        {
-            auto timeStr = pJson[pMasqueradingVector[7]].asString();
+            auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -465,7 +495,7 @@ void SensorData::updateByJson(const Json::Value &pJson) noexcept(false)
     {
         if(!pJson["id"].isNull())
         {
-            id_=std::make_shared<int32_t>((int32_t)pJson["id"].asInt64());
+            id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
     if(pJson.isMember("battery"))
@@ -481,7 +511,7 @@ void SensorData::updateByJson(const Json::Value &pJson) noexcept(false)
         dirtyFlag_[2] = true;
         if(!pJson["temperature"].isNull())
         {
-            temperature_=std::make_shared<std::string>(pJson["temperature"].asString());
+            temperature_=std::make_shared<double>(pJson["temperature"].asDouble());
         }
     }
     if(pJson.isMember("humidity"))
@@ -489,7 +519,7 @@ void SensorData::updateByJson(const Json::Value &pJson) noexcept(false)
         dirtyFlag_[3] = true;
         if(!pJson["humidity"].isNull())
         {
-            humidity_=std::make_shared<std::string>(pJson["humidity"].asString());
+            humidity_=std::make_shared<double>(pJson["humidity"].asDouble());
         }
     }
     if(pJson.isMember("pressure"))
@@ -497,33 +527,38 @@ void SensorData::updateByJson(const Json::Value &pJson) noexcept(false)
         dirtyFlag_[4] = true;
         if(!pJson["pressure"].isNull())
         {
-            pressure_=std::make_shared<std::string>(pJson["pressure"].asString());
+            pressure_=std::make_shared<double>(pJson["pressure"].asDouble());
         }
     }
-    if(pJson.isMember("date"))
+    if(pJson.isMember("measured_at"))
     {
         dirtyFlag_[5] = true;
-        if(!pJson["date"].isNull())
+        if(!pJson["measured_at"].isNull())
         {
-            auto daysStr = pJson["date"].asString();
+            auto timeStr = pJson["measured_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
-            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
-            date_=std::make_shared<::trantor::Date>(t*1000000);
-        }
-    }
-    if(pJson.isMember("time"))
-    {
-        dirtyFlag_[6] = true;
-        if(!pJson["time"].isNull())
-        {
-            time_=std::make_shared<std::string>(pJson["time"].asString());
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                measuredAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
     }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[7] = true;
+        dirtyFlag_[6] = true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -549,20 +584,25 @@ void SensorData::updateByJson(const Json::Value &pJson) noexcept(false)
     }
 }
 
-const int32_t &SensorData::getValueOfId() const noexcept
+const std::string &SensorData::getValueOfId() const noexcept
 {
-    static const int32_t defaultValue = int32_t();
+    static const std::string defaultValue = std::string();
     if(id_)
         return *id_;
     return defaultValue;
 }
-const std::shared_ptr<int32_t> &SensorData::getId() const noexcept
+const std::shared_ptr<std::string> &SensorData::getId() const noexcept
 {
     return id_;
 }
-void SensorData::setId(const int32_t &pId) noexcept
+void SensorData::setId(const std::string &pId) noexcept
 {
-    id_ = std::make_shared<int32_t>(pId);
+    id_ = std::make_shared<std::string>(pId);
+    dirtyFlag_[0] = true;
+}
+void SensorData::setId(std::string &&pId) noexcept
+{
+    id_ = std::make_shared<std::string>(std::move(pId));
     dirtyFlag_[0] = true;
 }
 const typename SensorData::PrimaryKeyType & SensorData::getPrimaryKey() const
@@ -588,109 +628,72 @@ void SensorData::setBattery(const int32_t &pBattery) noexcept
     dirtyFlag_[1] = true;
 }
 
-const std::string &SensorData::getValueOfTemperature() const noexcept
+const double &SensorData::getValueOfTemperature() const noexcept
 {
-    static const std::string defaultValue = std::string();
+    static const double defaultValue = double();
     if(temperature_)
         return *temperature_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &SensorData::getTemperature() const noexcept
+const std::shared_ptr<double> &SensorData::getTemperature() const noexcept
 {
     return temperature_;
 }
-void SensorData::setTemperature(const std::string &pTemperature) noexcept
+void SensorData::setTemperature(const double &pTemperature) noexcept
 {
-    temperature_ = std::make_shared<std::string>(pTemperature);
-    dirtyFlag_[2] = true;
-}
-void SensorData::setTemperature(std::string &&pTemperature) noexcept
-{
-    temperature_ = std::make_shared<std::string>(std::move(pTemperature));
+    temperature_ = std::make_shared<double>(pTemperature);
     dirtyFlag_[2] = true;
 }
 
-const std::string &SensorData::getValueOfHumidity() const noexcept
+const double &SensorData::getValueOfHumidity() const noexcept
 {
-    static const std::string defaultValue = std::string();
+    static const double defaultValue = double();
     if(humidity_)
         return *humidity_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &SensorData::getHumidity() const noexcept
+const std::shared_ptr<double> &SensorData::getHumidity() const noexcept
 {
     return humidity_;
 }
-void SensorData::setHumidity(const std::string &pHumidity) noexcept
+void SensorData::setHumidity(const double &pHumidity) noexcept
 {
-    humidity_ = std::make_shared<std::string>(pHumidity);
-    dirtyFlag_[3] = true;
-}
-void SensorData::setHumidity(std::string &&pHumidity) noexcept
-{
-    humidity_ = std::make_shared<std::string>(std::move(pHumidity));
+    humidity_ = std::make_shared<double>(pHumidity);
     dirtyFlag_[3] = true;
 }
 
-const std::string &SensorData::getValueOfPressure() const noexcept
+const double &SensorData::getValueOfPressure() const noexcept
 {
-    static const std::string defaultValue = std::string();
+    static const double defaultValue = double();
     if(pressure_)
         return *pressure_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &SensorData::getPressure() const noexcept
+const std::shared_ptr<double> &SensorData::getPressure() const noexcept
 {
     return pressure_;
 }
-void SensorData::setPressure(const std::string &pPressure) noexcept
+void SensorData::setPressure(const double &pPressure) noexcept
 {
-    pressure_ = std::make_shared<std::string>(pPressure);
-    dirtyFlag_[4] = true;
-}
-void SensorData::setPressure(std::string &&pPressure) noexcept
-{
-    pressure_ = std::make_shared<std::string>(std::move(pPressure));
+    pressure_ = std::make_shared<double>(pPressure);
     dirtyFlag_[4] = true;
 }
 
-const ::trantor::Date &SensorData::getValueOfDate() const noexcept
+const ::trantor::Date &SensorData::getValueOfMeasuredAt() const noexcept
 {
     static const ::trantor::Date defaultValue = ::trantor::Date();
-    if(date_)
-        return *date_;
+    if(measuredAt_)
+        return *measuredAt_;
     return defaultValue;
 }
-const std::shared_ptr<::trantor::Date> &SensorData::getDate() const noexcept
+const std::shared_ptr<::trantor::Date> &SensorData::getMeasuredAt() const noexcept
 {
-    return date_;
+    return measuredAt_;
 }
-void SensorData::setDate(const ::trantor::Date &pDate) noexcept
+void SensorData::setMeasuredAt(const ::trantor::Date &pMeasuredAt) noexcept
 {
-    date_ = std::make_shared<::trantor::Date>(pDate.roundDay());
+    measuredAt_ = std::make_shared<::trantor::Date>(pMeasuredAt);
     dirtyFlag_[5] = true;
-}
-
-const std::string &SensorData::getValueOfTime() const noexcept
-{
-    static const std::string defaultValue = std::string();
-    if(time_)
-        return *time_;
-    return defaultValue;
-}
-const std::shared_ptr<std::string> &SensorData::getTime() const noexcept
-{
-    return time_;
-}
-void SensorData::setTime(const std::string &pTime) noexcept
-{
-    time_ = std::make_shared<std::string>(pTime);
-    dirtyFlag_[6] = true;
-}
-void SensorData::setTime(std::string &&pTime) noexcept
-{
-    time_ = std::make_shared<std::string>(std::move(pTime));
-    dirtyFlag_[6] = true;
 }
 
 const ::trantor::Date &SensorData::getValueOfCreatedAt() const noexcept
@@ -707,12 +710,7 @@ const std::shared_ptr<::trantor::Date> &SensorData::getCreatedAt() const noexcep
 void SensorData::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
 {
     createdAt_ = std::make_shared<::trantor::Date>(pCreatedAt);
-    dirtyFlag_[7] = true;
-}
-void SensorData::setCreatedAtToNull() noexcept
-{
-    createdAt_.reset();
-    dirtyFlag_[7] = true;
+    dirtyFlag_[6] = true;
 }
 
 void SensorData::updateId(const uint64_t id)
@@ -722,12 +720,12 @@ void SensorData::updateId(const uint64_t id)
 const std::vector<std::string> &SensorData::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
+        "id",
         "battery",
         "temperature",
         "humidity",
         "pressure",
-        "date",
-        "time",
+        "measured_at",
         "created_at"
     };
     return inCols;
@@ -735,6 +733,17 @@ const std::vector<std::string> &SensorData::insertColumns() noexcept
 
 void SensorData::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+    if(dirtyFlag_[0])
+    {
+        if(getId())
+        {
+            binder << getValueOfId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
     if(dirtyFlag_[1])
     {
         if(getBattery())
@@ -781,9 +790,9 @@ void SensorData::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getDate())
+        if(getMeasuredAt())
         {
-            binder << getValueOfDate();
+            binder << getValueOfMeasuredAt();
         }
         else
         {
@@ -791,17 +800,6 @@ void SensorData::outputArgs(drogon::orm::internal::SqlBinder &binder) const
         }
     }
     if(dirtyFlag_[6])
-    {
-        if(getTime())
-        {
-            binder << getValueOfTime();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[7])
     {
         if(getCreatedAt())
         {
@@ -817,6 +815,10 @@ void SensorData::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 const std::vector<std::string> SensorData::updateColumns() const
 {
     std::vector<std::string> ret;
+    if(dirtyFlag_[0])
+    {
+        ret.push_back(getColumnName(0));
+    }
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
@@ -841,15 +843,22 @@ const std::vector<std::string> SensorData::updateColumns() const
     {
         ret.push_back(getColumnName(6));
     }
-    if(dirtyFlag_[7])
-    {
-        ret.push_back(getColumnName(7));
-    }
     return ret;
 }
 
 void SensorData::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+    if(dirtyFlag_[0])
+    {
+        if(getId())
+        {
+            binder << getValueOfId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
     if(dirtyFlag_[1])
     {
         if(getBattery())
@@ -896,9 +905,9 @@ void SensorData::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getDate())
+        if(getMeasuredAt())
         {
-            binder << getValueOfDate();
+            binder << getValueOfMeasuredAt();
         }
         else
         {
@@ -906,17 +915,6 @@ void SensorData::updateArgs(drogon::orm::internal::SqlBinder &binder) const
         }
     }
     if(dirtyFlag_[6])
-    {
-        if(getTime())
-        {
-            binder << getValueOfTime();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[7])
     {
         if(getCreatedAt())
         {
@@ -971,21 +969,13 @@ Json::Value SensorData::toJson() const
     {
         ret["pressure"]=Json::Value();
     }
-    if(getDate())
+    if(getMeasuredAt())
     {
-        ret["date"]=getDate()->toDbStringLocal();
+        ret["measured_at"]=getMeasuredAt()->toDbStringLocal();
     }
     else
     {
-        ret["date"]=Json::Value();
-    }
-    if(getTime())
-    {
-        ret["time"]=getValueOfTime();
-    }
-    else
-    {
-        ret["time"]=Json::Value();
+        ret["measured_at"]=Json::Value();
     }
     if(getCreatedAt())
     {
@@ -1002,7 +992,7 @@ Json::Value SensorData::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 8)
+    if(pMasqueradingVector.size() == 7)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -1061,9 +1051,9 @@ Json::Value SensorData::toMasqueradedJson(
         }
         if(!pMasqueradingVector[5].empty())
         {
-            if(getDate())
+            if(getMeasuredAt())
             {
-                ret[pMasqueradingVector[5]]=getDate()->toDbStringLocal();
+                ret[pMasqueradingVector[5]]=getMeasuredAt()->toDbStringLocal();
             }
             else
             {
@@ -1072,24 +1062,13 @@ Json::Value SensorData::toMasqueradedJson(
         }
         if(!pMasqueradingVector[6].empty())
         {
-            if(getTime())
+            if(getCreatedAt())
             {
-                ret[pMasqueradingVector[6]]=getValueOfTime();
+                ret[pMasqueradingVector[6]]=getCreatedAt()->toDbStringLocal();
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
-            }
-        }
-        if(!pMasqueradingVector[7].empty())
-        {
-            if(getCreatedAt())
-            {
-                ret[pMasqueradingVector[7]]=getCreatedAt()->toDbStringLocal();
-            }
-            else
-            {
-                ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
         return ret;
@@ -1135,21 +1114,13 @@ Json::Value SensorData::toMasqueradedJson(
     {
         ret["pressure"]=Json::Value();
     }
-    if(getDate())
+    if(getMeasuredAt())
     {
-        ret["date"]=getDate()->toDbStringLocal();
+        ret["measured_at"]=getMeasuredAt()->toDbStringLocal();
     }
     else
     {
-        ret["date"]=Json::Value();
-    }
-    if(getTime())
-    {
-        ret["time"]=getValueOfTime();
-    }
-    else
-    {
-        ret["time"]=Json::Value();
+        ret["measured_at"]=Json::Value();
     }
     if(getCreatedAt())
     {
@@ -1209,29 +1180,19 @@ bool SensorData::validateJsonForCreation(const Json::Value &pJson, std::string &
         err="The pressure column cannot be null";
         return false;
     }
-    if(pJson.isMember("date"))
+    if(pJson.isMember("measured_at"))
     {
-        if(!validJsonOfField(5, "date", pJson["date"], err, true))
+        if(!validJsonOfField(5, "measured_at", pJson["measured_at"], err, true))
             return false;
     }
     else
     {
-        err="The date column cannot be null";
-        return false;
-    }
-    if(pJson.isMember("time"))
-    {
-        if(!validJsonOfField(6, "time", pJson["time"], err, true))
-            return false;
-    }
-    else
-    {
-        err="The time column cannot be null";
+        err="The measured_at column cannot be null";
         return false;
     }
     if(pJson.isMember("created_at"))
     {
-        if(!validJsonOfField(7, "created_at", pJson["created_at"], err, true))
+        if(!validJsonOfField(6, "created_at", pJson["created_at"], err, true))
             return false;
     }
     return true;
@@ -1240,7 +1201,7 @@ bool SensorData::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                     const std::vector<std::string> &pMasqueradingVector,
                                                     std::string &err)
 {
-    if(pMasqueradingVector.size() != 8)
+    if(pMasqueradingVector.size() != 7)
     {
         err = "Bad masquerading vector";
         return false;
@@ -1326,19 +1287,6 @@ bool SensorData::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
-        else
-        {
-            err="The " + pMasqueradingVector[6] + " column cannot be null";
-            return false;
-        }
-      }
-      if(!pMasqueradingVector[7].empty())
-      {
-          if(pJson.isMember(pMasqueradingVector[7]))
-          {
-              if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
-                  return false;
-          }
       }
     }
     catch(const Json::LogicError &e)
@@ -1380,19 +1328,14 @@ bool SensorData::validateJsonForUpdate(const Json::Value &pJson, std::string &er
         if(!validJsonOfField(4, "pressure", pJson["pressure"], err, false))
             return false;
     }
-    if(pJson.isMember("date"))
+    if(pJson.isMember("measured_at"))
     {
-        if(!validJsonOfField(5, "date", pJson["date"], err, false))
-            return false;
-    }
-    if(pJson.isMember("time"))
-    {
-        if(!validJsonOfField(6, "time", pJson["time"], err, false))
+        if(!validJsonOfField(5, "measured_at", pJson["measured_at"], err, false))
             return false;
     }
     if(pJson.isMember("created_at"))
     {
-        if(!validJsonOfField(7, "created_at", pJson["created_at"], err, false))
+        if(!validJsonOfField(6, "created_at", pJson["created_at"], err, false))
             return false;
     }
     return true;
@@ -1401,7 +1344,7 @@ bool SensorData::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                   const std::vector<std::string> &pMasqueradingVector,
                                                   std::string &err)
 {
-    if(pMasqueradingVector.size() != 8)
+    if(pMasqueradingVector.size() != 7)
     {
         err = "Bad masquerading vector";
         return false;
@@ -1447,11 +1390,6 @@ bool SensorData::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
-      if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
-      {
-          if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
-              return false;
-      }
     }
     catch(const Json::LogicError &e)
     {
@@ -1474,12 +1412,7 @@ bool SensorData::validJsonOfField(size_t index,
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
-            if(isForCreation)
-            {
-                err="The automatic primary key cannot be set";
-                return false;
-            }
-            if(!pJson.isInt())
+            if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
@@ -1503,7 +1436,7 @@ bool SensorData::validJsonOfField(size_t index,
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
-            if(!pJson.isString())
+            if(!pJson.isNumeric())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
@@ -1515,7 +1448,7 @@ bool SensorData::validJsonOfField(size_t index,
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
-            if(!pJson.isString())
+            if(!pJson.isNumeric())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
@@ -1527,7 +1460,7 @@ bool SensorData::validJsonOfField(size_t index,
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
-            if(!pJson.isString())
+            if(!pJson.isNumeric())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
@@ -1550,17 +1483,6 @@ bool SensorData::validJsonOfField(size_t index,
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
-            }
-            if(!pJson.isString())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            break;
-        case 7:
-            if(pJson.isNull())
-            {
-                return true;
             }
             if(!pJson.isString())
             {

@@ -19,13 +19,9 @@ Task<HttpResponsePtr> SensorData::getById(const HttpRequestPtr req, const std::s
 		LOG_ERROR << "Id parameter is empty";
 		co_return responses::wrongRequestResponse("Id parameter is required");
 	}
-	auto id = tryParse<int32_t>(idStr, "Id", resp);
-	if (!id.has_value())
-		co_return resp;
 
-	LOG_DEBUG << "Fetching SensorData with id: " << idStr;
 
-	auto data = co_await coroTryFacadeCall(facade_->getById(id.value()), "getById", idStr, resp);
+	auto data = co_await coroTryFacadeCall(facade_->getById(idStr), "getById", idStr, resp);
 	if (!data.has_value()) {
 		co_return resp;
 	}
@@ -60,7 +56,6 @@ Task<HttpResponsePtr> SensorData::get(const HttpRequestPtr req)
 			if (!page.has_value())
 				co_return resp;
 		}
-		UUID
 
 		dataList = co_await coroTryFacadeCall(
 			facade_->getPaginated(page.value(), limit.value()),

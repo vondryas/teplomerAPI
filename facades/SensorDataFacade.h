@@ -21,7 +21,7 @@ namespace facade
 		}
 
 		void hello() const;
-		Task<SensorData> getById(const int32_t id) const; // Use drogon::Task
+		Task<SensorData> getById(const std::string& id) const; // Use drogon::Task
 		Task<mvector<SensorData>> getAll() const;
 		Task<mvector<SensorData>> getPaginated(const size_t page, const size_t limit) const;
 		Task<SensorData> create(const request_model::SensorData& data) const;

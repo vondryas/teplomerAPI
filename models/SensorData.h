@@ -29,312 +29,301 @@
 
 namespace drogon
 {
-namespace orm
-{
-class DbClient;
-using DbClientPtr = std::shared_ptr<DbClient>;
-}
+	namespace orm
+	{
+		class DbClient;
+		using DbClientPtr = std::shared_ptr<DbClient>;
+	}
 }
 namespace drogon_model
 {
-namespace teplomer_db
-{
+	namespace teplomer_db
+	{
 
-	class SensorData : public IDrogonModel
-{
-  public:
-    struct Cols
-    {
-        static const std::string _id;
-        static const std::string _battery;
-        static const std::string _temperature;
-        static const std::string _humidity;
-        static const std::string _pressure;
-        static const std::string _date;
-        static const std::string _time;
-        static const std::string _created_at;
-    };
+		class SensorData : public IDrogonModel
+		{
+		public:
+			struct Cols
+			{
+				static const std::string _id;
+				static const std::string _battery;
+				static const std::string _temperature;
+				static const std::string _humidity;
+				static const std::string _pressure;
+				static const std::string _measured_at;
+				static const std::string _created_at;
+			};
 
-    static const int primaryKeyNumber;
-    static const std::string tableName;
-    static const bool hasPrimaryKey;
-    static const std::string primaryKeyName;
-    using PrimaryKeyType = int32_t;
-    const PrimaryKeyType &getPrimaryKey() const;
+			static const int primaryKeyNumber;
+			static const std::string tableName;
+			static const bool hasPrimaryKey;
+			static const std::string primaryKeyName;
+			using PrimaryKeyType = std::string;
+			const PrimaryKeyType& getPrimaryKey() const;
 
-    /**
-     * @brief constructor
-     * @param r One row of records in the SQL query result.
-     * @param indexOffset Set the offset to -1 to access all columns by column names,
-     * otherwise access all columns by offsets.
-     * @note If the SQL is not a style of 'select * from table_name ...' (select all
-     * columns by an asterisk), please set the offset to -1.
-     */
-    explicit SensorData(const drogon::orm::Row &r, const ssize_t indexOffset = 0) noexcept;
+			/**
+			 * @brief constructor
+			 * @param r One row of records in the SQL query result.
+			 * @param indexOffset Set the offset to -1 to access all columns by column names,
+			 * otherwise access all columns by offsets.
+			 * @note If the SQL is not a style of 'select * from table_name ...' (select all
+			 * columns by an asterisk), please set the offset to -1.
+			 */
+			explicit SensorData(const drogon::orm::Row& r, const ssize_t indexOffset = 0) noexcept;
 
-    /**
-     * @brief constructor
-     * @param pJson The json object to construct a new instance.
-     */
-    explicit SensorData(const Json::Value &pJson) noexcept(false);
+			/**
+			 * @brief constructor
+			 * @param pJson The json object to construct a new instance.
+			 */
+			explicit SensorData(const Json::Value& pJson) noexcept(false);
 
-    /**
-     * @brief constructor
-     * @param pJson The json object to construct a new instance.
-     * @param pMasqueradingVector The aliases of table columns.
-     */
-    SensorData(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false);
+			/**
+			 * @brief constructor
+			 * @param pJson The json object to construct a new instance.
+			 * @param pMasqueradingVector The aliases of table columns.
+			 */
+			SensorData(const Json::Value& pJson, const std::vector<std::string>& pMasqueradingVector) noexcept(false);
 
-    void updateByJson(const Json::Value &pJson) noexcept(false);
-    void updateByMasqueradedJson(const Json::Value &pJson,
-                                 const std::vector<std::string> &pMasqueradingVector) noexcept(false);
-    static bool validateJsonForCreation(const Json::Value &pJson, std::string &err);
-    static bool validateMasqueradedJsonForCreation(const Json::Value &,
-                                                const std::vector<std::string> &pMasqueradingVector,
-                                                    std::string &err);
-    static bool validateJsonForUpdate(const Json::Value &pJson, std::string &err);
-    static bool validateMasqueradedJsonForUpdate(const Json::Value &,
-                                          const std::vector<std::string> &pMasqueradingVector,
-                                          std::string &err);
-    static bool validJsonOfField(size_t index,
-                          const std::string &fieldName,
-                          const Json::Value &pJson,
-                          std::string &err,
-                          bool isForCreation);
+			SensorData() = default;
 
-    /**  For column id  */
-    ///Get the value of the column id, returns the default value if the column is null
-    const int32_t &getValueOfId() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<int32_t> &getId() const noexcept;
-    ///Set the value of the column id
-    void setId(const int32_t &pId) noexcept;
+			void updateByJson(const Json::Value& pJson) noexcept(false);
+			void updateByMasqueradedJson(const Json::Value& pJson,
+				const std::vector<std::string>& pMasqueradingVector) noexcept(false);
+			static bool validateJsonForCreation(const Json::Value& pJson, std::string& err);
+			static bool validateMasqueradedJsonForCreation(const Json::Value&,
+				const std::vector<std::string>& pMasqueradingVector,
+				std::string& err);
+			static bool validateJsonForUpdate(const Json::Value& pJson, std::string& err);
+			static bool validateMasqueradedJsonForUpdate(const Json::Value&,
+				const std::vector<std::string>& pMasqueradingVector,
+				std::string& err);
+			static bool validJsonOfField(size_t index,
+				const std::string& fieldName,
+				const Json::Value& pJson,
+				std::string& err,
+				bool isForCreation);
 
-    /**  For column battery  */
-    ///Get the value of the column battery, returns the default value if the column is null
-    const int32_t &getValueOfBattery() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<int32_t> &getBattery() const noexcept;
-    ///Set the value of the column battery
-    void setBattery(const int32_t &pBattery) noexcept;
+			/**  For column id  */
+			///Get the value of the column id, returns the default value if the column is null
+			const std::string& getValueOfId() const noexcept;
+			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+			const std::shared_ptr<std::string>& getId() const noexcept;
+			///Set the value of the column id
+			void setId(const std::string& pId) noexcept;
+			void setId(std::string&& pId) noexcept;
 
-    /**  For column temperature  */
-    ///Get the value of the column temperature, returns the default value if the column is null
-    const std::string &getValueOfTemperature() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getTemperature() const noexcept;
-    ///Set the value of the column temperature
-    void setTemperature(const std::string &pTemperature) noexcept;
-    void setTemperature(std::string &&pTemperature) noexcept;
+			/**  For column battery  */
+			///Get the value of the column battery, returns the default value if the column is null
+			const int32_t& getValueOfBattery() const noexcept;
+			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+			const std::shared_ptr<int32_t>& getBattery() const noexcept;
+			///Set the value of the column battery
+			void setBattery(const int32_t& pBattery) noexcept;
 
-    /**  For column humidity  */
-    ///Get the value of the column humidity, returns the default value if the column is null
-    const std::string &getValueOfHumidity() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getHumidity() const noexcept;
-    ///Set the value of the column humidity
-    void setHumidity(const std::string &pHumidity) noexcept;
-    void setHumidity(std::string &&pHumidity) noexcept;
+			/**  For column temperature  */
+			///Get the value of the column temperature, returns the default value if the column is null
+			const double& getValueOfTemperature() const noexcept;
+			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+			const std::shared_ptr<double>& getTemperature() const noexcept;
+			///Set the value of the column temperature
+			void setTemperature(const double& pTemperature) noexcept;
 
-    /**  For column pressure  */
-    ///Get the value of the column pressure, returns the default value if the column is null
-    const std::string &getValueOfPressure() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getPressure() const noexcept;
-    ///Set the value of the column pressure
-    void setPressure(const std::string &pPressure) noexcept;
-    void setPressure(std::string &&pPressure) noexcept;
+			/**  For column humidity  */
+			///Get the value of the column humidity, returns the default value if the column is null
+			const double& getValueOfHumidity() const noexcept;
+			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+			const std::shared_ptr<double>& getHumidity() const noexcept;
+			///Set the value of the column humidity
+			void setHumidity(const double& pHumidity) noexcept;
 
-    /**  For column date  */
-    ///Get the value of the column date, returns the default value if the column is null
-    const ::trantor::Date &getValueOfDate() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<::trantor::Date> &getDate() const noexcept;
-    ///Set the value of the column date
-    void setDate(const ::trantor::Date &pDate) noexcept;
+			/**  For column pressure  */
+			///Get the value of the column pressure, returns the default value if the column is null
+			const double& getValueOfPressure() const noexcept;
+			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+			const std::shared_ptr<double>& getPressure() const noexcept;
+			///Set the value of the column pressure
+			void setPressure(const double& pPressure) noexcept;
 
-    /**  For column time  */
-    ///Get the value of the column time, returns the default value if the column is null
-    const std::string &getValueOfTime() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getTime() const noexcept;
-    ///Set the value of the column time
-    void setTime(const std::string &pTime) noexcept;
-    void setTime(std::string &&pTime) noexcept;
+			/**  For column measured_at  */
+			///Get the value of the column measured_at, returns the default value if the column is null
+			const ::trantor::Date& getValueOfMeasuredAt() const noexcept;
+			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+			const std::shared_ptr<::trantor::Date>& getMeasuredAt() const noexcept;
+			///Set the value of the column measured_at
+			void setMeasuredAt(const ::trantor::Date& pMeasuredAt) noexcept;
 
-    /**  For column created_at  */
-    ///Get the value of the column created_at, returns the default value if the column is null
-    const ::trantor::Date &getValueOfCreatedAt() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<::trantor::Date> &getCreatedAt() const noexcept;
-    ///Set the value of the column created_at
-    void setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept;
-    void setCreatedAtToNull() noexcept;
+			/**  For column created_at  */
+			///Get the value of the column created_at, returns the default value if the column is null
+			const ::trantor::Date& getValueOfCreatedAt() const noexcept;
+			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+			const std::shared_ptr<::trantor::Date>& getCreatedAt() const noexcept;
+			///Set the value of the column created_at
+			void setCreatedAt(const ::trantor::Date& pCreatedAt) noexcept;
 
 
-    static size_t getColumnNumber() noexcept {  return 8;  }
-    static const std::string &getColumnName(size_t index) noexcept(false);
+			static size_t getColumnNumber() noexcept { return 7; }
+			static const std::string& getColumnName(size_t index) noexcept(false);
 
-    Json::Value toJson() const;
-    Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
-    /// Relationship interfaces
-  private:
-    friend drogon::orm::Mapper<SensorData>;
-    friend drogon::orm::BaseBuilder<SensorData, true, true>;
-    friend drogon::orm::BaseBuilder<SensorData, true, false>;
-    friend drogon::orm::BaseBuilder<SensorData, false, true>;
-    friend drogon::orm::BaseBuilder<SensorData, false, false>;
+			Json::Value toJson() const;
+			Json::Value toMasqueradedJson(const std::vector<std::string>& pMasqueradingVector) const;
+			/// Relationship interfaces
+		private:
+			friend drogon::orm::Mapper<SensorData>;
+			friend drogon::orm::BaseBuilder<SensorData, true, true>;
+			friend drogon::orm::BaseBuilder<SensorData, true, false>;
+			friend drogon::orm::BaseBuilder<SensorData, false, true>;
+			friend drogon::orm::BaseBuilder<SensorData, false, false>;
 #ifdef __cpp_impl_coroutine
-    friend drogon::orm::CoroMapper<SensorData>;
+			friend drogon::orm::CoroMapper<SensorData>;
 #endif
-    static const std::vector<std::string> &insertColumns() noexcept;
-    void outputArgs(drogon::orm::internal::SqlBinder &binder) const;
-    const std::vector<std::string> updateColumns() const;
-    void updateArgs(drogon::orm::internal::SqlBinder &binder) const;
-    ///For mysql or sqlite3
-    void updateId(const uint64_t id);
-    std::shared_ptr<int32_t> id_;
-    std::shared_ptr<int32_t> battery_;
-    std::shared_ptr<std::string> temperature_;
-    std::shared_ptr<std::string> humidity_;
-    std::shared_ptr<std::string> pressure_;
-    std::shared_ptr<::trantor::Date> date_;
-    std::shared_ptr<std::string> time_;
-    std::shared_ptr<::trantor::Date> createdAt_;
-    struct MetaData
-    {
-        const std::string colName_;
-        const std::string colType_;
-        const std::string colDatabaseType_;
-        const ssize_t colLength_;
-        const bool isAutoVal_;
-        const bool isPrimaryKey_;
-        const bool notNull_;
-    };
-    static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[8]={ false };
-  public:
-    static const std::string &sqlForFindingByPrimaryKey()
-    {
-        static const std::string sql="select * from " + tableName + " where id = $1";
-        return sql;
-    }
+			static const std::vector<std::string>& insertColumns() noexcept;
+			void outputArgs(drogon::orm::internal::SqlBinder& binder) const;
+			const std::vector<std::string> updateColumns() const;
+			void updateArgs(drogon::orm::internal::SqlBinder& binder) const;
+			///For mysql or sqlite3
+			void updateId(const uint64_t id);
+			std::shared_ptr<std::string> id_;
+			std::shared_ptr<int32_t> battery_;
+			std::shared_ptr<double> temperature_;
+			std::shared_ptr<double> humidity_;
+			std::shared_ptr<double> pressure_;
+			std::shared_ptr<::trantor::Date> measuredAt_;
+			std::shared_ptr<::trantor::Date> createdAt_;
+			struct MetaData
+			{
+				const std::string colName_;
+				const std::string colType_;
+				const std::string colDatabaseType_;
+				const ssize_t colLength_;
+				const bool isAutoVal_;
+				const bool isPrimaryKey_;
+				const bool notNull_;
+			};
+			static const std::vector<MetaData> metaData_;
+			bool dirtyFlag_[7] = { false };
+		public:
+			static const std::string& sqlForFindingByPrimaryKey()
+			{
+				static const std::string sql = "select * from " + tableName + " where id = $1";
+				return sql;
+			}
 
-    static const std::string &sqlForDeletingByPrimaryKey()
-    {
-        static const std::string sql="delete from " + tableName + " where id = $1";
-        return sql;
-    }
-    std::string sqlForInserting(bool &needSelection) const
-    {
-        std::string sql="insert into " + tableName + " (";
-        size_t parametersCount = 0;
-        needSelection = false;
-            sql += "id,";
-            ++parametersCount;
-        if(dirtyFlag_[1])
-        {
-            sql += "battery,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[2])
-        {
-            sql += "temperature,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[3])
-        {
-            sql += "humidity,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[4])
-        {
-            sql += "pressure,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[5])
-        {
-            sql += "date,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[6])
-        {
-            sql += "time,";
-            ++parametersCount;
-        }
-        sql += "created_at,";
-        ++parametersCount;
-        if(!dirtyFlag_[7])
-        {
-            needSelection=true;
-        }
-        needSelection=true;
-        if(parametersCount > 0)
-        {
-            sql[sql.length()-1]=')';
-            sql += " values (";
-        }
-        else
-            sql += ") values (";
+			static const std::string& sqlForDeletingByPrimaryKey()
+			{
+				static const std::string sql = "delete from " + tableName + " where id = $1";
+				return sql;
+			}
+			std::string sqlForInserting(bool& needSelection) const
+			{
+				std::string sql = "insert into " + tableName + " (";
+				size_t parametersCount = 0;
+				needSelection = false;
+				sql += "id,";
+				++parametersCount;
+				if (!dirtyFlag_[0])
+				{
+					needSelection = true;
+				}
+				if (dirtyFlag_[1])
+				{
+					sql += "battery,";
+					++parametersCount;
+				}
+				if (dirtyFlag_[2])
+				{
+					sql += "temperature,";
+					++parametersCount;
+				}
+				if (dirtyFlag_[3])
+				{
+					sql += "humidity,";
+					++parametersCount;
+				}
+				if (dirtyFlag_[4])
+				{
+					sql += "pressure,";
+					++parametersCount;
+				}
+				if (dirtyFlag_[5])
+				{
+					sql += "measured_at,";
+					++parametersCount;
+				}
+				sql += "created_at,";
+				++parametersCount;
+				if (!dirtyFlag_[6])
+				{
+					needSelection = true;
+				}
+				if (parametersCount > 0)
+				{
+					sql[sql.length() - 1] = ')';
+					sql += " values (";
+				}
+				else
+					sql += ") values (";
 
-        int placeholder=1;
-        char placeholderStr[64];
-        size_t n=0;
-        sql +="default,";
-        if(dirtyFlag_[1])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        if(dirtyFlag_[2])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        if(dirtyFlag_[3])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        if(dirtyFlag_[4])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        if(dirtyFlag_[5])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        if(dirtyFlag_[6])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        if(dirtyFlag_[7])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
-        }
-        if(parametersCount > 0)
-        {
-            sql.resize(sql.length() - 1);
-        }
-        if(needSelection)
-        {
-            sql.append(") returning *");
-        }
-        else
-        {
-            sql.append(1, ')');
-        }
-        LOG_TRACE << sql;
-        return sql;
-    }
-};
-} // namespace teplomer_db
+				int placeholder = 1;
+				char placeholderStr[64];
+				size_t n = 0;
+				if (dirtyFlag_[0])
+				{
+					n = snprintf(placeholderStr, sizeof(placeholderStr), "$%d,", placeholder++);
+					sql.append(placeholderStr, n);
+				}
+				else
+				{
+					sql += "default,";
+				}
+				if (dirtyFlag_[1])
+				{
+					n = snprintf(placeholderStr, sizeof(placeholderStr), "$%d,", placeholder++);
+					sql.append(placeholderStr, n);
+				}
+				if (dirtyFlag_[2])
+				{
+					n = snprintf(placeholderStr, sizeof(placeholderStr), "$%d,", placeholder++);
+					sql.append(placeholderStr, n);
+				}
+				if (dirtyFlag_[3])
+				{
+					n = snprintf(placeholderStr, sizeof(placeholderStr), "$%d,", placeholder++);
+					sql.append(placeholderStr, n);
+				}
+				if (dirtyFlag_[4])
+				{
+					n = snprintf(placeholderStr, sizeof(placeholderStr), "$%d,", placeholder++);
+					sql.append(placeholderStr, n);
+				}
+				if (dirtyFlag_[5])
+				{
+					n = snprintf(placeholderStr, sizeof(placeholderStr), "$%d,", placeholder++);
+					sql.append(placeholderStr, n);
+				}
+				if (dirtyFlag_[6])
+				{
+					n = snprintf(placeholderStr, sizeof(placeholderStr), "$%d,", placeholder++);
+					sql.append(placeholderStr, n);
+				}
+				else
+				{
+					sql += "default,";
+				}
+				if (parametersCount > 0)
+				{
+					sql.resize(sql.length() - 1);
+				}
+				if (needSelection)
+				{
+					sql.append(") returning *");
+				}
+				else
+				{
+					sql.append(1, ')');
+				}
+				LOG_TRACE << sql;
+				return sql;
+			}
+		};
+	} // namespace teplomer_db
 } // namespace drogon_model
