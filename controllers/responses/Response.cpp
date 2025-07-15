@@ -9,7 +9,7 @@ HttpResponsePtr responses::wrongRequestResponse(const std::string& reason, const
 	return resp;
 }
 
-HttpResponsePtr responses::JsonOkResponse(const Json::Value& json, const drogon::HttpStatusCode statusCode)
+HttpResponsePtr responses::jsonOkResponse(const Json::Value& json, const drogon::HttpStatusCode statusCode)
 {
 	auto resp = drogon::HttpResponse::newHttpJsonResponse(json);
 	resp->setStatusCode(statusCode);
@@ -26,6 +26,15 @@ HttpResponsePtr responses::notFoundResponse(const std::string& reason, const dro
 HttpResponsePtr responses::internalServerErrorResponse(const std::string& reason, const drogon::HttpStatusCode statusCode)
 {
 	return wrongRequestResponse(reason, statusCode);
+}
+
+HttpResponsePtr responses::sizeOkResponse(const size_t value, const drogon::HttpStatusCode statusCode)
+{
+	auto resp = drogon::HttpResponse::newHttpResponse();
+	resp->setStatusCode(statusCode);
+	resp->setContentTypeCode(drogon::CT_TEXT_PLAIN);
+	resp->setBody(std::to_string(value));
+	return resp;
 }
 
 

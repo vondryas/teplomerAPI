@@ -7,6 +7,8 @@
 #include <drogon/HttpResponse.h>
 #include <controllers/responses/Response.h>
 #include <fmt/core.h>
+#include <type_traits>
+#include <models/model_utils/mvector.h>
 
 namespace TryFacadeCall {
 	template <class T> inline constexpr bool always_false = false;
@@ -23,6 +25,7 @@ struct AwaitableResult<Task<T>> {
 	using type = T;
 };
 
+
 template <typename Awaitable>
 Task<std::optional<typename AwaitableResult<std::decay_t<Awaitable>>::type>>
 coroTryFacadeCall(
@@ -34,26 +37,26 @@ coroTryFacadeCall(
 {
 	using T = typename AwaitableResult<std::decay_t<Awaitable>>::type;
 
-	static_assert(std::is_base_of<drogon_model::teplomer_db::IDrogonModel, T>::value
-		|| std::is_same_v<T, std::size_t>,
-		"T must derive from DrogonModelBase or type must be size_t");
+	static_assert((std::is_base_of_v<model_interface::IModel, T>
+		|| std::is_same_v<T, std::size_t>),
+		"T must derive from IModel or type must be size_t");
 	try {
 		T result = co_await std::forward<Awaitable>(awaitable);
 		co_return result;
 	}
 	catch (const drogon::orm::DrogonDbException& e) {
-		const auto* sqlErr = dynamic_cast<const drogon::orm::SqlError*>(&e.base());
+		const auto* s = dynamic_cast<const drogon::orm::Failure*>(&e.base());
 
-		if (sqlErr) {
-			LOG_ERROR << "Database error in " << context << " with id " << idStr << ": " << e.base().what();
-			outErrorResp = responses::wrongRequestResponse(
-				fmt::format("Database error in {} with id {}: {}", context, idStr, e.base().what()));
-		}
-		else {
+		if (s) {
 			LOG_ERROR << "Unexpected DB error in " << context << " with id " << idStr << ": " << e.base().what();
 			outErrorResp = responses::internalServerErrorResponse(
 				fmt::format("Unexpected DB error in {} with id {}: {}", context, idStr, e.base().what()),
 				drogon::k500InternalServerError);
+		}
+		{
+			LOG_ERROR << "Database error in " << context << " with id " << idStr << ": " << e.base().what();
+			outErrorResp = responses::wrongRequestResponse(
+				fmt::format("Database error in {} with {}: {}", context, idStr, e.base().what()));
 		}
 	}
 

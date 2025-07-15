@@ -9,8 +9,8 @@
 
 #include "ControllerBase.h"
 #include <drogon/HttpController.h>
-#include <models/SensorData.h>
-#include <request/SensorDataRequest.h>
+#include <models/orm_model/SensorData.h>
+#include <models/request_model/SensorDataRequest.h>
 #include <facades/SensorDataFacade.h>
 #include <drogon/orm/CoroMapper.h>
 #include <controllers/exceptionWrapper/TryNumberParsing.h>
@@ -30,17 +30,17 @@ class SensorData :
 public:
 	METHOD_LIST_BEGIN
 		// use METHOD_ADD to add your custom processing function here;
-		METHOD_ADD(SensorData::getById, "/get/{1}", Get);
-	METHOD_ADD(SensorData::get, "/get", Get);
-	METHOD_ADD(SensorData::updateOne, "/update", Put);
-	METHOD_ADD(SensorData::deleteOne, "/delete/{1}", Delete);
-	METHOD_ADD(SensorData::create, "/create", Post);
+		METHOD_ADD(SensorData::getById, "/{1}", Get);
+	METHOD_ADD(SensorData::get, "", Get);
+	METHOD_ADD(SensorData::updateOne, "", Put);
+	METHOD_ADD(SensorData::deleteOne, "/{1}", Delete);
+	METHOD_ADD(SensorData::create, "", Post);
 	//ADD_METHOD_TO(SensorData::update,"../models",Put,Options);
 	METHOD_LIST_END
 
 		Task<HttpResponsePtr> getById(const HttpRequestPtr req, const std::string& id);
 	Task<HttpResponsePtr> get(const HttpRequestPtr req);
-	Task<HttpResponsePtr> updateOne(const HttpRequestPtr req, const request_model::SensorData& data);
+	Task<HttpResponsePtr> updateOne(const HttpRequestPtr req, const request_model::SensorDataRequest& data);
 	Task<HttpResponsePtr> deleteOne(const HttpRequestPtr req, const std::string& id);
-	Task<HttpResponsePtr> create(const HttpRequestPtr req, const request_model::SensorData& data);
+	Task<HttpResponsePtr> create(const HttpRequestPtr req, const request_model::SensorDataRequest& data);
 };

@@ -19,14 +19,18 @@ Task<HttpResponsePtr> SensorData::getById(const HttpRequestPtr req, const std::s
 		LOG_ERROR << "Id parameter is empty";
 		co_return responses::wrongRequestResponse("Id parameter is required");
 	}
-
+	if (!uuids::uuid::is_valid_uuid(idStr))
+	{
+		LOG_DEBUG << "Invalid UUID format for id: " << idStr;
+		co_return responses::wrongRequestResponse(fmt::format("Invalid UUID format for id: {}", idStr));
+	}
 
 	auto data = co_await coroTryFacadeCall(facade_->getById(idStr), "getById", idStr, resp);
 	if (!data.has_value()) {
 		co_return resp;
 	}
 
-	co_return responses::JsonOkResponse(data->toJson());
+	co_return responses::jsonOkResponse(data->toJson());
 }
 
 
@@ -72,23 +76,89 @@ Task<HttpResponsePtr> SensorData::get(const HttpRequestPtr req)
 		}
 	}
 
-	co_return responses::JsonOkResponse(dataList->toJson());
+	co_return responses::jsonOkResponse(dataList->toJson());
 }
 
 
 
 
-Task<HttpResponsePtr> SensorData::updateOne(const HttpRequestPtr req, const request_model::SensorData& data)
+Task<HttpResponsePtr> SensorData::updateOne(const HttpRequestPtr req, const request_model::SensorDataRequest& data)
 {
-	co_return drogon::HttpResponse::newHttpResponse();
+	HttpResponsePtr resp = nullptr;
+	if (data.isEmpty())
+	{
+		LOG_ERROR << "Request data is empty";
+		co_return responses::wrongRequestResponse("Request data is required");
+	}
+	auto [result, errorMessage] = data.validateForUpdate();
+	if (!result)
+	{
+		LOG_ERROR << "Request data not valid: " << errorMessage;
+		co_return responses::wrongRequestResponse(errorMessage);
+	}
+
+
+	auto updatedDataRows = co_await coroTryFacadeCall(
+		facade_->update(data),
+		"update",
+		fmt::format("id: {}", data.id.has_value() ? uuids::to_string(*data.id) : "null"),
+		resp
+	);
+	if (!updatedDataRows.has_value()) {
+		co_return resp;
+	}
+	co_return responses::sizeOkResponse(*updatedDataRows);
 }
 
 Task<HttpResponsePtr> SensorData::deleteOne(const HttpRequestPtr req, const std::string& id)
 {
-	co_return drogon::HttpResponse::newHttpResponse();
+	HttpResponsePtr resp = nullptr;
+	LOG_DEBUG << "delete";
+	if (id.empty())
+	{
+		LOG_ERROR << "Id parameter is empty";
+		co_return responses::wrongRequestResponse("Id parameter is required");
+	}
+	if (!uuids::uuid::is_valid_uuid(id))
+	{
+		LOG_DEBUG << "Invalid UUID format for id: " << id;
+		co_return responses::wrongRequestResponse(fmt::format("Invalid UUID format for id: {}", id));
+	}
+	auto deletedRows = co_await coroTryFacadeCall(
+		facade_->deleteById(id),
+		"deleteById",
+		id,
+		resp
+	);
+	if (!deletedRows.has_value()) {
+		co_return resp;
+	}
+	co_return responses::sizeOkResponse(*deletedRows);
 }
 
-Task<HttpResponsePtr> SensorData::create(const HttpRequestPtr req, const request_model::SensorData& data)
+Task<HttpResponsePtr> SensorData::create(const HttpRequestPtr req, const request_model::SensorDataRequest& data)
 {
-	co_return drogon::HttpResponse::newHttpResponse();;
+	HttpResponsePtr resp = nullptr;
+	if (data.isEmpty())
+	{
+		LOG_ERROR << "Request data is empty";
+		co_return responses::wrongRequestResponse("Request data is required");
+	}
+	auto [result, errorMessage] = data.validateForCreate();
+	if (!result)
+	{
+		LOG_ERROR << "Request data not valid";
+		co_return responses::wrongRequestResponse(errorMessage);
+	}
+
+	auto newData = co_await coroTryFacadeCall(
+		facade_->create(data),
+		"create",
+		fmt::format("id: {}", data.id.has_value() ? uuids::to_string(*data.id) : "null"),
+		resp
+	);
+	if (!newData.has_value()) {
+		co_return resp;
+	}
+	co_return responses::jsonOkResponse(newData->toJson());
 }

@@ -10,7 +10,7 @@ namespace responses
 	HttpResponsePtr wrongRequestResponse(const std::string& reason,
 		const drogon::HttpStatusCode statusCode = drogon::k400BadRequest);
 
-	HttpResponsePtr JsonOkResponse(const Json::Value& json,
+	HttpResponsePtr jsonOkResponse(const Json::Value& json,
 		const drogon::HttpStatusCode statusCode = drogon::k200OK);
 
 	HttpResponsePtr notFoundResponse(const std::string& reason,
@@ -18,4 +18,7 @@ namespace responses
 
 	HttpResponsePtr internalServerErrorResponse(const std::string& reason,
 		const drogon::HttpStatusCode statusCode = drogon::k500InternalServerError);
+
+	HttpResponsePtr sizeOkResponse(const size_t value,
+		const drogon::HttpStatusCode statusCode = drogon::k200OK);
 }

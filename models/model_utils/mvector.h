@@ -1,12 +1,14 @@
+#pragma once
+
 #include <vector>
 #include <json/json.h>
-#include "../IDrogonModel.h"
+#include <models/model_interface/IModel.h>
 
 
 template<typename T>
-class mvector : public drogon_model::teplomer_db::IDrogonModel
+class mvector : public model_interface::IModel
 {
-	static_assert(std::is_base_of<drogon_model::teplomer_db::IDrogonModel, T>::value,
+	static_assert(std::is_base_of<model_interface::IModel, T>::value,
 		"T must derive from DrogonModelBase");
 
 private:
@@ -32,7 +34,18 @@ public:
 		return jsonArray;
 	}
 
-
+	void mapToOrmModel(model_interface::IModel& ormModel) const override
+	{
+		throw std::runtime_error("Mapping to ORM model is not implemented for mvector");
+	}
+	void mapToListModel(model_interface::IModel& ormModel) const override
+	{
+		throw std::runtime_error("Mapping to list model is not implemented for mvector");
+	}
+	void mapToRequestModel(model_interface::IModel& ormModel) const override
+	{
+		throw std::runtime_error("Mapping to request model is not implemented for mvector");
+	}
 
 	// std::vector functions
 

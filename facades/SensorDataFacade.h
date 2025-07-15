@@ -1,8 +1,8 @@
 #pragma once
 #include "FacadeBase.h"
 #include <functional>
-#include <models/SensorData.h>
-#include <models/request/SensorDataRequest.h>
+#include <models/orm_model/SensorData.h>
+#include <models/request_model/SensorDataRequest.h>
 #include <drogon/orm/Mapper.h>
 #include <drogon/orm/CoroMapper.h>
 #include <models/model_utils/mvector.h>
@@ -24,9 +24,9 @@ namespace facade
 		Task<SensorData> getById(const std::string& id) const; // Use drogon::Task
 		Task<mvector<SensorData>> getAll() const;
 		Task<mvector<SensorData>> getPaginated(const size_t page, const size_t limit) const;
-		Task<SensorData> create(const request_model::SensorData& data) const;
-		Task<size_t> update(const request_model::SensorData& data) const;
-		Task<size_t> deleteById(const int32_t id) const;
+		Task<SensorData> create(const request_model::SensorDataRequest& data) const;
+		Task<size_t> update(const request_model::SensorDataRequest& data) const;
+		Task<size_t> deleteById(const std::string& id) const;
 
 	private:
 	};

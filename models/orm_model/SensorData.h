@@ -25,7 +25,7 @@
 #include <tuple>
 #include <stdint.h>
 #include <iostream>
-#include "IDrogonModel.h"
+#include "ISensorData.h"
 
 namespace drogon
 {
@@ -40,7 +40,7 @@ namespace drogon_model
 	namespace teplomer_db
 	{
 
-		class SensorData : public IDrogonModel
+		class SensorData : public ISensorData
 		{
 		public:
 			struct Cols
@@ -86,6 +86,7 @@ namespace drogon_model
 
 			SensorData() = default;
 
+
 			void updateByJson(const Json::Value& pJson) noexcept(false);
 			void updateByMasqueradedJson(const Json::Value& pJson,
 				const std::vector<std::string>& pMasqueradingVector) noexcept(false);
@@ -107,50 +108,50 @@ namespace drogon_model
 			///Get the value of the column id, returns the default value if the column is null
 			const std::string& getValueOfId() const noexcept;
 			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-			const std::shared_ptr<std::string>& getId() const noexcept;
+			const std::shared_ptr<std::string>& getId() const noexcept override;
 			///Set the value of the column id
-			void setId(const std::string& pId) noexcept;
-			void setId(std::string&& pId) noexcept;
+			void setId(const std::string& pId) noexcept override;
+			void setId(std::string&& pId) noexcept override;
 
 			/**  For column battery  */
 			///Get the value of the column battery, returns the default value if the column is null
 			const int32_t& getValueOfBattery() const noexcept;
 			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-			const std::shared_ptr<int32_t>& getBattery() const noexcept;
+			const std::shared_ptr<int32_t>& getBattery() const noexcept override;
 			///Set the value of the column battery
-			void setBattery(const int32_t& pBattery) noexcept;
+			void setBattery(const int32_t& pBattery) noexcept override;
 
 			/**  For column temperature  */
 			///Get the value of the column temperature, returns the default value if the column is null
 			const double& getValueOfTemperature() const noexcept;
 			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-			const std::shared_ptr<double>& getTemperature() const noexcept;
+			const std::shared_ptr<double>& getTemperature() const noexcept override;
 			///Set the value of the column temperature
-			void setTemperature(const double& pTemperature) noexcept;
+			void setTemperature(const double& pTemperature) noexcept override;
 
 			/**  For column humidity  */
 			///Get the value of the column humidity, returns the default value if the column is null
 			const double& getValueOfHumidity() const noexcept;
 			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-			const std::shared_ptr<double>& getHumidity() const noexcept;
+			const std::shared_ptr<double>& getHumidity() const noexcept override;
 			///Set the value of the column humidity
-			void setHumidity(const double& pHumidity) noexcept;
+			void setHumidity(const double& pHumidity) noexcept override;
 
 			/**  For column pressure  */
 			///Get the value of the column pressure, returns the default value if the column is null
 			const double& getValueOfPressure() const noexcept;
 			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-			const std::shared_ptr<double>& getPressure() const noexcept;
+			const std::shared_ptr<double>& getPressure() const noexcept override;
 			///Set the value of the column pressure
-			void setPressure(const double& pPressure) noexcept;
+			void setPressure(const double& pPressure) noexcept override;
 
 			/**  For column measured_at  */
 			///Get the value of the column measured_at, returns the default value if the column is null
 			const ::trantor::Date& getValueOfMeasuredAt() const noexcept;
 			///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-			const std::shared_ptr<::trantor::Date>& getMeasuredAt() const noexcept;
+			const std::shared_ptr<::trantor::Date>& getMeasuredAt() const noexcept override;
 			///Set the value of the column measured_at
-			void setMeasuredAt(const ::trantor::Date& pMeasuredAt) noexcept;
+			void setMeasuredAt(const ::trantor::Date& pMeasuredAt) noexcept override;
 
 			/**  For column created_at  */
 			///Get the value of the column created_at, returns the default value if the column is null

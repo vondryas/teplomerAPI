@@ -96,16 +96,17 @@ configure_file(${CMAKE_SOURCE_DIR}/config_template.json
 
 # Source file collection with platform-specific considerations
 set(SOURCE_DIRS
-    
     controllers
     controllers/exceptionWrapper
     controllers/responses
     filters
     plugins
-    models
-    models/request
-    models/list
+    models/orm_model
+    models/request_model
+    models/list_model
     models/model_utils
+    models/model_mapper
+    models/model_interface
     facades
 )
 
