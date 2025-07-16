@@ -1,0 +1,26 @@
+{
+  //rdbms: server type, postgresql,mysql or sqlite3
+  "rdbms": "postgresql",
+  //filename: sqlite3 db file name
+  //"filename":"",
+  //host: server address,localhost by default;
+  "host": "@DB_HOST@",
+  //port: Server port, 5432 by default
+  "port": 5432,
+  //dbname: Database name
+  "dbname": "@DB_NAME@",
+  //user: 'postgres' by default
+  "user": "@DB_USER@",
+  //passwd: '' by default
+  "passwd": "@DB_PASSWD@",
+  //schema: valid for postgreSQL, "public" by default;
+  "schema": "public",
+  //client_encoding: The character set used by drogon_ctl. it is empty string by default which 
+  //means use the default character set.
+  //"client_encoding": "",
+  //table: An array of tables to be modelized. if the array is empty, all revealed tables are modelized.
+  "tables": [ "sensor_data" ]
+  //convert: the value can be changed by a function call before it is stored into database or
+  //after it is read from database
+
+}

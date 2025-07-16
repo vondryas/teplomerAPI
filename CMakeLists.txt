@@ -94,6 +94,10 @@ check_required_env_var(DB_PASSWD)
 configure_file(${CMAKE_SOURCE_DIR}/config_template.json
                ${CMAKE_BINARY_DIR}/config.json)
 
+# Make model.json file with database connection settings
+configure_file(${CMAKE_SOURCE_DIR}/models/orm_model/model_template.json
+               ${CMAKE_SOURCE_DIR}/models/orm_model/model.json)
+
 # Source file collection with platform-specific considerations
 set(SOURCE_DIRS
     controllers
