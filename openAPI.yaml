@@ -1,0 +1,212 @@
+openapi: 3.0.0
+info:
+  title: Sensor Data API
+  description: API for managing sensor data measurements
+  version: 1.0.0
+servers:
+  - url: http://localhost
+    description: Local development server
+
+paths:
+  /sensor-data:
+    get:
+      summary: Get all sensor data or paginated results
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SensorData'
+        '400':
+          description: Invalid request parameters
+        '500':
+          description: Internal server error
+    post:
+      summary: Create new sensor data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorDataRequest'
+      responses:
+        '200':
+          description: Sensor data created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorData'
+        '400':
+          description: Invalid input data
+        '500':
+          description: Internal server error
+    put:
+      summary: Update existing sensor data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorDataRequest'
+      responses:
+        '200':
+          description: Number of updated rows
+          content:
+            application/json:
+              schema:
+                type: integer
+        '400':
+          description: Invalid input data
+        '404':
+          description: Sensor data not found
+        '500':
+          description: Internal server error
+
+  /sensor-data/{id}:
+    get:
+      summary: Get sensor data by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID of the sensor data to fetch
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorData'
+        '400':
+          description: Invalid UUID format
+        '404':
+          description: Sensor data not found
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete sensor data by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID of the sensor data to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Number of deleted rows
+          content:
+            application/json:
+              schema:
+                type: integer
+        '400':
+          description: Invalid UUID format
+        '404':
+          description: Sensor data not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    SensorData:
+      type: object
+      required:
+        - id
+        - battery
+        - temperature
+        - humidity
+        - pressure
+        - measured_at
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the sensor data
+        battery:
+          type: integer
+          format: int32
+          description: Battery level of the sensor
+        temperature:
+          type: number
+          format: double
+          description: Temperature measurement
+        humidity:
+          type: number
+          format: double
+          description: Humidity measurement
+        pressure:
+          type: number
+          format: double
+          description: Pressure measurement
+        measured_at:
+          type: string
+          format: date-time
+          description: Timestamp when measurement was taken
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when record was created
+
+    SensorDataRequest:
+      type: object
+      required:
+        - battery
+        - temperature
+        - humidity
+        - pressure
+        - date
+        - time
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier (required for update)
+        battery:
+          type: integer
+          format: int32
+          description: Battery level of the sensor
+        temperature:
+          type: number
+          format: double
+          description: Temperature measurement
+        humidity:
+          type: number
+          format: double
+          description: Humidity measurement
+        pressure:
+          type: number
+          format: double
+          description: Pressure measurement
+        date:
+          type: string
+          format: date
+          example: "2023-01-01"
+          description: Measurement date (YYYY-MM-DD)
+        time:
+          type: string
+          format: time
+          example: "12:00:00"
+          description: Measurement time (HH:MM:SS)

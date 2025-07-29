@@ -46,6 +46,7 @@ coroTryFacadeCall(
 	}
 	catch (const drogon::orm::DrogonDbException& e) {
 		const auto* s = dynamic_cast<const drogon::orm::Failure*>(&e.base());
+		const auto* unexpectedRows = dynamic_cast<const drogon::orm::UnexpectedRows*>(&e.base());
 
 		if (s) {
 			LOG_ERROR << "Unexpected DB error in " << context << " with id " << idStr << ": " << e.base().what();
@@ -53,6 +54,12 @@ coroTryFacadeCall(
 				fmt::format("Unexpected DB error in {} with id {}: {}", context, idStr, e.base().what()),
 				drogon::k500InternalServerError);
 		}
+		else if(unexpectedRows) {
+			LOG_ERROR << "Database not found " << context << " with id " << idStr << ": " << e.base().what();
+			outErrorResp = responses::notFoundResponse(
+				fmt::format("Database not found {} with id {}: {}", context, idStr, e.base().what()));
+		}
+		else
 		{
 			LOG_ERROR << "Database error in " << context << " with id " << idStr << ": " << e.base().what();
 			outErrorResp = responses::wrongRequestResponse(
