@@ -89,6 +89,7 @@ check_required_env_var(DB_HOST)
 check_required_env_var(DB_NAME)
 check_required_env_var(DB_USER)
 check_required_env_var(DB_PASSWD)
+check_required_env_var(PORT)
 
 # Make configuration file with database connection settings
 configure_file(${CMAKE_SOURCE_DIR}/config_template.json
