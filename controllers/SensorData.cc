@@ -73,15 +73,17 @@ Task<HttpResponsePtr> SensorData::get(const HttpRequestPtr req)
 			fmt::format("page: {}, limit: {}", page.value(), limit.value()),
 			resp
 		);
+
 	}
 	else
 	{
 		dataList = co_await coroTryFacadeCall(facade_->getAll(), "getAll", "none", resp);
-		if (!dataList.has_value()) {
-			co_return resp;
-		}
+
 	}
 
+	if (!dataList.has_value()) {
+		co_return resp;
+	}
 	co_return responses::jsonOkResponse(dataList->toJson());
 }
 
