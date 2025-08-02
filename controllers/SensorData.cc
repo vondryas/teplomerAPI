@@ -61,6 +61,12 @@ Task<HttpResponsePtr> SensorData::get(const HttpRequestPtr req)
 				co_return resp;
 		}
 
+		if (limit < 1 || page < 1)
+		{
+			LOG_ERROR << "Invalid page or limit value";
+			co_return responses::wrongRequestResponse("Page and limit must be greater than 0");
+		}
+
 		dataList = co_await coroTryFacadeCall(
 			facade_->getPaginated(page.value(), limit.value()),
 			"getAll",
