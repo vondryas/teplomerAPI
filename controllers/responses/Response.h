@@ -21,4 +21,10 @@ namespace responses
 
 	HttpResponsePtr sizeOkResponse(const size_t value,
 		const drogon::HttpStatusCode statusCode = drogon::k200OK);
+
+	HttpResponsePtr unauthorizedResponse(const std::string& reason,
+		const drogon::HttpStatusCode statusCode = drogon::k401Unauthorized);
+
+	HttpResponsePtr forbiddenResponse(const std::string& reason,
+		const drogon::HttpStatusCode statusCode = drogon::k403Forbidden);
 }

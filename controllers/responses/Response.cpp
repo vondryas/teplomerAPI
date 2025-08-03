@@ -37,6 +37,16 @@ HttpResponsePtr responses::sizeOkResponse(const size_t value, const drogon::Http
 	return resp;
 }
 
+HttpResponsePtr responses::unauthorizedResponse(const std::string& reason, const drogon::HttpStatusCode statusCode)
+{
+	return wrongRequestResponse(reason, statusCode);
+}
+
+HttpResponsePtr responses::forbiddenResponse(const std::string& reason, const drogon::HttpStatusCode statusCode)
+{
+	return wrongRequestResponse(reason, statusCode);
+}
+
 
 
 

@@ -5,13 +5,16 @@ ARG DB_HOST
 ARG DB_USER
 ARG DB_NAME
 ARG DB_PASSWD
+ARG ISSUER
+ARG AUTH_KEY
+ARG DB_PORT
 ARG PORT
 
 RUN apt-get update && apt-get install -y \
     build-essential cmake git wget curl \
     libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev \
     libpq-dev libsqlite3-dev gdb gcc g++ zip unzip tar pkg-config \
-    ninja-build bison flex autoconf make ca-certificates
+    ninja-build bison flex autoconf make ca-certificates python3
 
 RUN git clone --depth 1 https://github.com/microsoft/vcpkg
 

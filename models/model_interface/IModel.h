@@ -1,6 +1,7 @@
 #pragma once
 
 #include <models/model_mapper/IModelMapper.h>
+#include <json/json.h>
 
 namespace model_interface
 {
@@ -11,4 +12,4 @@ namespace model_interface
 
 		virtual Json::Value toJson() const = 0;
 	};
-} 
+}

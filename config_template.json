@@ -50,7 +50,7 @@
       //host: Server address,localhost by default
       "host": "@DB_HOST@",
       //port: Server port, 5432 by default
-      "port": 5432,
+      "port": @DB_PORT@,
       //dbname: Database name
       "dbname": "@DB_NAME@",
       //user: 'postgres' by default
@@ -326,5 +326,12 @@
     */
   ],
   //custom_config: custom configuration for users. This object can be get by the app().getCustomConfig() method. 
-  "custom_config": {}
+  "custom_config": {
+    // JsonWebTokens configuration
+    "jwt": {
+      "private_key": "@AUTH_KEY@",
+      "issuer": "@ISSUER@",
+      "audience": "teplomerapi"
+    }
+  }
 }

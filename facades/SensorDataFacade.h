@@ -6,6 +6,7 @@
 #include <drogon/orm/Mapper.h>
 #include <drogon/orm/CoroMapper.h>
 #include <models/model_utils/mvector.h>
+#include <models/list_model/SensorDataList.h>
 
 using namespace drogon;
 namespace facade
@@ -13,6 +14,7 @@ namespace facade
 	class SensorDataFacade : public FacadeBase
 	{
 		using SensorData = drogon_model::teplomer_db::SensorData;
+		using SensorDataList = list_model::SensorDataList;
 	public:
 		// Type aliases for callback functions
 
@@ -22,8 +24,8 @@ namespace facade
 
 		void hello() const;
 		Task<SensorData> getById(const std::string& id) const; // Use drogon::Task
-		Task<mvector<SensorData>> getAll() const;
-		Task<mvector<SensorData>> getPaginated(const size_t page, const size_t limit) const;
+		Task<SensorDataList> getAll() const;
+		Task<SensorDataList> getPaginated(const size_t page, const size_t limit) const;
 		Task<SensorData> create(const request_model::SensorDataRequest& data) const;
 		Task<size_t> update(const request_model::SensorDataRequest& data) const;
 		Task<size_t> deleteById(const std::string& id) const;

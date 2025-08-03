@@ -8,6 +8,7 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     endif()
 endif()
 
+
 project(teplomerAPI LANGUAGES CXX)
 
 # Platform detection
@@ -76,6 +77,22 @@ target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 find_package(stduuid CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE stduuid)
 
+# jwt-cpp
+find_package(jwt-cpp CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE jwt-cpp::jwt-cpp)
+
+find_package(botan CONFIG REQUIRED)
+if (TARGET Botan::Botan-static)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Botan::Botan-static)
+    message(STATUS "Botan-static")
+elseif (TARGET Botan::Botan)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Botan::Botan)
+    message(STATUS "Botan")
+endif()
+
+find_package(Boost REQUIRED COMPONENTS random)
+target_link_libraries(${PROJECT_NAME} PRIVATE Boost::random)
+
 # Database configuration with cross-platform environment variable handling
 function(check_required_env_var var_name)
     if(DEFINED ENV{${var_name}})
@@ -85,11 +102,28 @@ function(check_required_env_var var_name)
     endif()
 endfunction()
 
+function(check_var var)
+    if(DEFINED ${var})
+        message("Variable ${var} is defined: ${${var}}")
+    else()
+        if(DEFINED ENV{${var}})
+            set(${var} "$ENV{${var}}" CACHE STRING "Environment variable ${var}")
+            message("Using environment variable ${var}: ${${var}}")
+        else()
+            set (${var} "default_value" CACHE STRING "Default value for ${var}")
+            message(STATUS "Variable ${var} is not defined, using default value: ${${var}}")
+        endif()
+    endif()
+endfunction()
+
 check_required_env_var(DB_HOST)
 check_required_env_var(DB_NAME)
 check_required_env_var(DB_USER)
 check_required_env_var(DB_PASSWD)
 check_required_env_var(PORT)
+check_required_env_var(AUTH_KEY)
+check_required_env_var(DB_PORT)
+check_var(ISSUER)
 
 # Make configuration file with database connection settings
 configure_file(${CMAKE_SOURCE_DIR}/config_template.json
@@ -113,6 +147,8 @@ set(SOURCE_DIRS
     models/model_mapper
     models/model_interface
     facades
+    facades/utils/jwt
+    facades/utils/passwdhash
 )
 
 # Include directories (include without specifying subdirectories))

@@ -11,6 +11,8 @@
 #include <cstdlib> 
 
 
+using SensorDataList = list_model::SensorDataList;
+
 Task<HttpResponsePtr> SensorData::getById(const HttpRequestPtr req, const std::string& idStr)
 {
 	HttpResponsePtr resp = nullptr;
@@ -44,7 +46,7 @@ Task<HttpResponsePtr> SensorData::get(const HttpRequestPtr req)
 	LOG_DEBUG << "page" << pageStr;
 	std::string limitStr = req->getParameter("limit");
 	LOG_DEBUG << "limit" << limitStr;
-	std::optional<mvector<drogon_model::teplomer_db::SensorData>> dataList;
+	std::optional<SensorDataList> dataList;
 	if (!pageStr.empty() || !limitStr.empty())
 	{
 		if (!pageStr.empty())

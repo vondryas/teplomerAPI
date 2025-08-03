@@ -14,6 +14,9 @@
     "libpqxx",
     "openssl",
     "zlib",
-    "stduuid"
+    "stduuid",
+    "jwt-cpp",
+    "botan",
+    "boost-random"
   ]
 }

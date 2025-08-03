@@ -11,6 +11,7 @@
 #include <drogon/HttpController.h>
 #include <models/orm_model/SensorData.h>
 #include <models/request_model/SensorDataRequest.h>
+#include <models/list_model/SensorDataList.h>
 #include <facades/SensorDataFacade.h>
 #include <drogon/orm/CoroMapper.h>
 #include <controllers/exceptionWrapper/TryNumberParsing.h>
@@ -30,11 +31,11 @@ class SensorData :
 public:
 	METHOD_LIST_BEGIN
 		// use METHOD_ADD to add your custom processing function here;
-		METHOD_ADD(SensorData::getById, "/{1}", Get);
-	METHOD_ADD(SensorData::get, "", Get);
-	METHOD_ADD(SensorData::updateOne, "", Put);
-	METHOD_ADD(SensorData::deleteOne, "/{1}", Delete);
-	METHOD_ADD(SensorData::create, "", Post);
+		METHOD_ADD(SensorData::getById, "/{1}", Get, "filters::JwtFilter");
+	METHOD_ADD(SensorData::get, "", Get, "filters::JwtFilter");
+	METHOD_ADD(SensorData::updateOne, "", Put, "filters::JwtFilter");
+	METHOD_ADD(SensorData::deleteOne, "/{1}", Delete, "filters::JwtFilter");
+	METHOD_ADD(SensorData::create, "", Post, "filters::JwtFilter");
 	//ADD_METHOD_TO(SensorData::update,"../models",Put,Options);
 	METHOD_LIST_END
 

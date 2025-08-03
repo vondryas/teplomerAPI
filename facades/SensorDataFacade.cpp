@@ -4,6 +4,7 @@
 #include <memory>
 
 using SensorData = drogon_model::teplomer_db::SensorData;
+using SensorDataList = list_model::SensorDataList;
 
 void facade::SensorDataFacade::hello() const
 {
@@ -16,21 +17,30 @@ Task<SensorData> facade::SensorDataFacade::getById(const std::string& id) const
 	co_return co_await mapper.findByPrimaryKey(id);
 }
 
-Task<mvector<SensorData>> facade::SensorDataFacade::getAll() const
+Task<SensorDataList> facade::SensorDataFacade::getAll() const
 {
 	auto mapper = drogon::orm::CoroMapper<SensorData>(drogon::app().getFastDbClient());
 	auto data = co_await mapper.orderBy(SensorData::Cols::_measured_at, drogon::orm::SortOrder::DESC)
 		.findAll();
-	co_return mvector<SensorData>(data);
+	SensorDataList sensorDataList;
+	sensorDataList.setData(mvector<SensorData>(data));
+	sensorDataList.setTotalCount(data.size());
+	sensorDataList.setLimit(data.size());
+	co_return sensorDataList;
 }
 
-Task<mvector<SensorData>> facade::SensorDataFacade::getPaginated(const size_t page, const size_t limit) const
+Task<SensorDataList> facade::SensorDataFacade::getPaginated(const size_t page, const size_t limit) const
 {
 	auto mapper = drogon::orm::CoroMapper<SensorData>(drogon::app().getFastDbClient());
 	auto data = co_await mapper.orderBy(SensorData::Cols::_measured_at, drogon::orm::SortOrder::DESC)
 		.paginate(page, limit)
 		.findAll();
-	co_return mvector<SensorData>(data);
+	SensorDataList sensorDataList;
+	sensorDataList.setData(mvector<SensorData>(data));
+	sensorDataList.setTotalCount(co_await mapper.count());
+	sensorDataList.setLimit(limit);
+	sensorDataList.setPage(page);
+	co_return sensorDataList;
 }
 
 Task<SensorData> facade::SensorDataFacade::create(const request_model::SensorDataRequest& data) const

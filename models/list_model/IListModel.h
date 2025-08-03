@@ -9,7 +9,5 @@ namespace list_model
 	{
 	public:
 		virtual ~IListModel() = default;
-
-
 	};
 }
