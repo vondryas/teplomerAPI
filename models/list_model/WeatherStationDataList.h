@@ -2,20 +2,23 @@
 
 #include "IListModel.h"
 #include <models/model_utils/mvector.h>
-#include <models/orm_model/SensorData.h>
+#include <models/orm_model/WeatherStationData.h> // <-- FIX: include correct header for WeatherStationData
 
 namespace list_model
 {
-	class SensorDataList : public IListModel
+	 // <-- FIX: make type accessible
+
+	class WeatherStationDataList : public IListModel
 	{
+		using WeatherStationData = drogon_model::defaultdb::WeatherStationData;
 	public:
-		SensorDataList() = default;
-		explicit SensorDataList(const mvector<drogon_model::teplomer_db::SensorData>& data)
+		WeatherStationDataList() = default;
+		explicit WeatherStationDataList(const mvector<WeatherStationData>& data)
 			: data_(data) {
 		}
 
 		void setTotalCount(size_t count) { totalCount_ = count; }
-		void setData(const mvector<drogon_model::teplomer_db::SensorData>& data) { data_ = data; }
+		void setData(const mvector<WeatherStationData>& data) { data_ = data; }
 		void setLimit(size_t limit) { limit_ = limit; }
 		void setPage(size_t page) { page_ = page; }
 
@@ -27,7 +30,7 @@ namespace list_model
 		Json::Value toJson() const override;
 
 	private:
-		mvector<drogon_model::teplomer_db::SensorData> data_;
+		mvector<WeatherStationData> data_;
 		size_t totalCount_ = 0;
 		size_t limit_ = 0;
 		size_t page_ = 1;

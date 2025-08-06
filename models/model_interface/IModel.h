@@ -3,6 +3,7 @@
 #include <models/model_mapper/IModelMapper.h>
 #include <json/json.h>
 
+
 namespace model_interface
 {
 	class IModel : public model_mapper::IModelMapper

@@ -6,7 +6,7 @@
   //host: server address,localhost by default;
   "host": "@DB_HOST@",
   //port: Server port, 5432 by default
-  "port": 5432,
+  "port": @DB_PORT@,
   //dbname: Database name
   "dbname": "@DB_NAME@",
   //user: 'postgres' by default
@@ -19,8 +19,33 @@
   //means use the default character set.
   //"client_encoding": "",
   //table: An array of tables to be modelized. if the array is empty, all revealed tables are modelized.
-  "tables": [ "sensor_data" ]
+  "tables": [ "users", "devices", "weather_station_data" ],
   //convert: the value can be changed by a function call before it is stored into database or
   //after it is read from database
+  "relationships": {
+    "enabled": true,
+    "items": [
+      {
+        "type": "has many",
+        "original_table_name": "users",
+        "original_table_alias": "user",
+        "original_key": "id",
+        "target_table_name": "devices",
+        "target_table_alias": "",
+        "target_key": "user_id",
+        "enable_reverse": true
+      },
+      {
+        "type": "has many",
+        "original_table_name": "devices",
+        "original_table_alias": "device",
+        "original_key": "name",
+        "target_table_name": "weather_station_data",
+        "target_table_alias": "",
+        "target_key": "device_id",
+        "enable_reverse": true
+      }
+    ]
+  }
 
 }

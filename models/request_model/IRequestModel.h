@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stduuid/uuid.h>
-#include <models/orm_model/SensorData.h>
 #include <models/model_interface/IUserModel.h>
 #include <utility>
 

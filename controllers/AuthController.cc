@@ -8,20 +8,20 @@ Task<HttpResponsePtr> Auth::getToken(const HttpRequestPtr request) {
 
     // Verify if there's a missing values on body of request
     if (!responseJson.isMember("email") || !responseJson.isMember("password")) {
-        resultJson["error"] = "Missing email or password.";
-        resultJson["status"] = 0;
-
-        co_return responses::wrongRequestResponse("Id parameter is required");;
+        co_return responses::wrongRequestResponse("Missing email or password");;
     }
 
     JWT jwtGenerated = JWT::generateToken({
         { "email", picojson::value(responseJson["email"].asString()) },
+        { "role", picojson::value("omg")},
         }, responseJson.isMember("remember") && responseJson["remember"].asBool());
     std::int64_t jwtExpiration = jwtGenerated.getExpiration();
 
     resultJson["token"] = jwtGenerated.getToken();
     resultJson["expiresIn"] = jwtExpiration - std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     resultJson["expiresAt"] = jwtExpiration;
+
+	request->session()->insert("Authorization", jwtGenerated.getToken());
     
     co_return responses::jsonOkResponse(resultJson);
 }

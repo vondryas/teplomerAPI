@@ -1,26 +1,28 @@
-#include "SensorDataList.h"
+#include "UsersList.h"
 
-void list_model::SensorDataList::mapToOrmModel(model_interface::IModel& model) const
+void list_model::UsersList::mapToOrmModel(model_interface::IModel& model) const
 {
 	LOG_INFO << "Mapping list model to ORM model";
 	throw std::runtime_error("Mapping to ORM model is not implemented for SensorData list model");
 }
 
-void list_model::SensorDataList::mapToListModel(model_interface::IModel& model) const
+void list_model::UsersList::mapToListModel(model_interface::IModel& model) const
 {
 	LOG_INFO << "Mapping list model to another list model";
-	auto& sensorDataList = dynamic_cast<list_model::SensorDataList&>(model);
+	auto& sensorDataList = dynamic_cast<UsersList&>(model);
 	sensorDataList.setData(data_);
 	sensorDataList.setTotalCount(totalCount_);
+	sensorDataList.setLimit(limit_);
+	sensorDataList.setPage(page_);
 }
 
-void list_model::SensorDataList::mapToRequestModel(model_interface::IModel& model) const
+void list_model::UsersList::mapToRequestModel(model_interface::IModel& model) const
 {
 	LOG_INFO << "Mapping list model to request model";
 	throw std::runtime_error("Mapping to request model is not implemented for SensorData list model");
 }
 
-Json::Value list_model::SensorDataList::toJson() const
+Json::Value list_model::UsersList::toJson() const
 {
 	Json::Value json;
 	json["Data"] = data_.toJson();

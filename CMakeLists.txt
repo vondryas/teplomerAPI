@@ -7,6 +7,7 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
             CACHE STRING "Vcpkg toolchain file")
     endif()
 endif()
+message(STATUS "Using Vcpkg toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
 
 
 project(teplomerAPI LANGUAGES CXX)
@@ -56,7 +57,7 @@ else()
 endif()
 
 # Executable setup
-add_executable(${PROJECT_NAME} main.cc)
+add_executable(${PROJECT_NAME} main.cc "models/list_model/UsersList.h")
 
 # Drogon configuration - supports both local and installed versions
 option(USE_LOCAL_DROGON "Use local Drogon subdirectory" OFF)
@@ -149,6 +150,7 @@ set(SOURCE_DIRS
     facades
     facades/utils/jwt
     facades/utils/passwdhash
+    enums
 )
 
 # Include directories (include without specifying subdirectories))

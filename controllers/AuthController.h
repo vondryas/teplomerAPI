@@ -4,6 +4,7 @@
 #include <drogon/drogon.h>
 #include <drogon/HttpController.h>
 #include <controllers/responses/Response.h>
+#include <controllers/roles/UserRoles.h>
 
 using namespace drogon;
 using namespace facade;
