@@ -1,5 +1,7 @@
-#include <models/orm_model/Devices.h>
 #include "UsersRequest.h"
+#include <models/orm_model/Devices.h>
+#include <models/orm_model/Users.h>
+
 
 
 void request_model::UsersRequest::mapToOrmModel(model_interface::IModel& ormModel) const

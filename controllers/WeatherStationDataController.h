@@ -18,27 +18,27 @@ using namespace drogon;
  * @brief this class is created by the drogon_ctl command (drogon_ctl create controller -r WeatherStationDataController).
  * this class is a restful API controller.
  */
-class WeatherStationDataController: 
-    public ControllerBase<facade::WeatherStationDataFacade>,
-    public drogon::HttpController<WeatherStationDataController>
+class WeatherStationDataController :
+	public ControllerBase<facade::WeatherStationDataFacade>,
+	public drogon::HttpController<WeatherStationDataController>
 {
-  public:
-    METHOD_LIST_BEGIN
-    // use METHOD_ADD to add your custom processing function here;
-       METHOD_ADD(WeatherStationData::getById, "/{1}", Get);
-    METHOD_ADD(WeatherStationData::get, "", Get);
-    METHOD_ADD(WeatherStationData::updateOne, "", Put, "filters::JwtFilter");
-    METHOD_ADD(WeatherStationData::deleteOne, "/{1}", Delete, "filters::JwtFilter");
-    METHOD_ADD(WeatherStationData::create, "", Post, "filters::JwtFilter");
-    METHOD_LIST_END
+public:
+	METHOD_LIST_BEGIN
+		// use METHOD_ADD to add your custom processing function here;
+		ADD_METHOD_TO(WeatherStationDataController::getById, "weather/{1}", Get);
+	ADD_METHOD_TO(WeatherStationDataController::get, "weather", Get);
+	ADD_METHOD_TO(WeatherStationDataController::updateOne, "weather", Put, "filters::JwtFilter");
+	ADD_METHOD_TO(WeatherStationDataController::deleteOne, "weather/{1}", Delete, "filters::JwtFilter");
+	ADD_METHOD_TO(WeatherStationDataController::create, "weather", Post);
+	METHOD_LIST_END
 
-    Task<HttpResponsePtr> getById(const HttpRequestPtr req, const std::string& id);
-    Task<HttpResponsePtr> get(const HttpRequestPtr req);
-    Task<HttpResponsePtr> updateOne(const HttpRequestPtr req, const request_model::WeatherStationDataRequest& data);
-    Task<HttpResponsePtr> deleteOne(const HttpRequestPtr req, const std::string& id);
-    Task<HttpResponsePtr> create(const HttpRequestPtr req, const request_model::WeatherStationDataRequest& data);
+		Task<HttpResponsePtr> getById(const HttpRequestPtr req, const std::string& id);
+	Task<HttpResponsePtr> get(const HttpRequestPtr req);
+	Task<HttpResponsePtr> updateOne(const HttpRequestPtr req, const request_model::WeatherStationDataRequest& data);
+	Task<HttpResponsePtr> deleteOne(const HttpRequestPtr req, const std::string& id);
+	Task<HttpResponsePtr> create(const HttpRequestPtr req, const request_model::WeatherStationDataRequest& data);
 
-//    void update(const HttpRequestPtr &req,
-//                std::function<void(const HttpResponsePtr &)> &&callback);
+	//    void update(const HttpRequestPtr &req,
+	//                std::function<void(const HttpResponsePtr &)> &&callback);
 
 };

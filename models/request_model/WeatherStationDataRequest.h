@@ -1,7 +1,13 @@
 #pragma once 
 
+
 #include "IRequestModel.h"
-#include <models/orm_model/WeatherStationData.h>
+
+namespace drogon_model::defaultdb
+{
+	class WeatherStationData;
+}
+
 
 namespace request_model
 {
@@ -13,7 +19,7 @@ namespace request_model
 		std::optional<double> temperature;
 		std::optional<double> humidity;
 		std::optional<double> pressure;
-		std::optional<uuids::uuid> deviceId;
+		std::string deviceId;
 		std::string date;
 		std::string time;
 		WeatherStationDataRequest() = default;
@@ -35,8 +41,8 @@ namespace request_model
 		inline bool isEmpty() const
 		{
 			return !id.has_value() && !battery.has_value() &&
-				   !temperature.has_value() && !humidity.has_value() && !pressure.has_value() &&
-				   !deviceId.has_value() && date.empty() && time.empty();
+				!temperature.has_value() && !humidity.has_value() && !pressure.has_value() &&
+				deviceId.empty() && date.empty() && time.empty();
 		}
 
 		Json::Value toJson() const override
@@ -52,8 +58,8 @@ namespace request_model
 				json["humidity"] = *humidity;
 			if (pressure.has_value())
 				json["pressure"] = *pressure;
-			if (deviceId.has_value())
-				json["deviceId"] = uuids::to_string(*deviceId);
+			if (!deviceId.empty())
+				json["deviceId"] = deviceId;
 			if (!date.empty())
 				json["date"] = date;
 			if (!time.empty())
@@ -71,12 +77,7 @@ namespace request_model
 				result = result && uuids::uuid::is_valid_uuid(uuids::to_string(*id));
 				errorMessage += result ? "" : "Invalid UUID format for ID\n";
 			}
-			if (deviceId.has_value())
-			{
-				result = result && uuids::uuid::is_valid_uuid(uuids::to_string(*deviceId));
-				errorMessage += uuids::uuid::is_valid_uuid(uuids::to_string(*deviceId)) ? "" : "Invalid UUid format for deviceId\n";
-			}
-			else 
+			if (deviceId.empty())
 			{
 				result = false;
 				errorMessage += "Device ID must be provided\n";

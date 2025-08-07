@@ -1,5 +1,6 @@
 #pragma once
 
+#include <drogon/drogon.h>
 #include <models/model_mapper/IModelMapper.h>
 #include <json/json.h>
 

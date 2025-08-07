@@ -9,6 +9,7 @@
 
 #include <drogon/HttpController.h>
 #include "ControllerBase.h"
+#include <facades/DevicesFacade.h>
 
 using namespace drogon;
 /**

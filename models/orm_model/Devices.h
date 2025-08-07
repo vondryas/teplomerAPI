@@ -26,8 +26,8 @@
 #include <stdint.h>
 #include <iostream>
 #include "IDevices.h"
-#include "Users.h"
-#include "WeatherStationData.h"
+
+
 
 namespace drogon
 {

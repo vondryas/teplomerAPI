@@ -1,6 +1,5 @@
-#include <models/orm_model/WeatherStationData.h>
-
 #include "WeatherStationDataRequest.h"
+#include <models/orm_model/WeatherStationData.h>
 
 
 void request_model::WeatherStationDataRequest::mapToOrmModel(model_interface::IModel& ormModel) const
@@ -17,6 +16,11 @@ void request_model::WeatherStationDataRequest::mapToOrmModel(model_interface::IM
 		sensorDataOrmModel.setHumidity(*humidity);
 	if (pressure.has_value())
 		sensorDataOrmModel.setPressure(*pressure);
+	if (!deviceId.empty())
+	{
+		sensorDataOrmModel.setDeviceId(deviceId);
+	}
+
 	if (!date.empty() && !time.empty())
 	{
 		trantor::Date measureAt;

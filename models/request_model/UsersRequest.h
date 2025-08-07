@@ -1,12 +1,13 @@
 #pragma once
 
-#include <models/orm_model/Devices.h>
+
 #include "IRequestModel.h"
 #include <optional>
 
 namespace drogon_model::defaultdb
 {
 	class Devices;
+	class Users;
 }
 
 namespace request_model

@@ -1,12 +1,20 @@
 #pragma once
 
 #include "IRequestModel.h"
+
 #include <optional>
+
+namespace drogon_model::defaultdb
+{
+	class Devices;
+}
 
 namespace request_model
 {
 	struct DevicesRequest : IRequestModel
 	{
+		using Devices = drogon_model::defaultdb::Devices;
+
 		std::string name;
 		std::optional<int32_t> type;
 		std::optional<uuids::uuid> userId; // Assuming userId is a UUID
@@ -30,8 +38,6 @@ namespace request_model
 		Json::Value toJson() const override
 		{
 			Json::Value json;
-			if (id.has_value())
-				json["id"] = uuids::to_string(*id);
 			if (!name.empty())
 				json["name"] = name;
 			if (type.has_value())
@@ -46,10 +52,15 @@ namespace request_model
 			LOG_INFO << "Validating request for create operation";
 			bool result = true;
 			std::string errorMessage;
-			if (id.has_value())
+			if (userId.has_value())
 			{
-				result = result && uuids::uuid::is_valid_uuid(uuids::to_string(*id));
-				errorMessage += result ? "" : "Invalid UUID format for ID\n";
+				result = result && uuids::uuid::is_valid_uuid(uuids::to_string(*userId));
+				errorMessage += result ? "" : "Invalid UUID format for userId\n";
+			}
+			else
+			{
+				result = false;
+				errorMessage += "userId must be specified\n";
 			}
 			if (name.empty())
 			{
@@ -60,11 +71,6 @@ namespace request_model
 			{
 				result = false;
 				errorMessage += "type must be specified\n";
-			}
-			if (!userId.has_value())
-			{
-				result = false;
-				errorMessage += "userId must be specified\n";
 			}
 			return { result, errorMessage };
 		}

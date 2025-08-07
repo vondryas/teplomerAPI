@@ -8,6 +8,9 @@
 #pragma once
 
 #include <drogon/HttpController.h>
+#include "ControllerBase.h"
+#include <facades/UsersFacade.h>
+
 using namespace drogon;
 /**
  * @brief this class is created by the drogon_ctl command (drogon_ctl create controller -r UsersController).

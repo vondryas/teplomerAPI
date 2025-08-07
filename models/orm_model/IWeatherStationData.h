@@ -31,7 +31,7 @@ namespace drogon_model::defaultdb
 		virtual const std::shared_ptr<double>& getPressure() const noexcept = 0;
 		virtual const std::shared_ptr<trantor::Date>& getMeasureAt() const noexcept = 0;
 		virtual const std::shared_ptr<std::string>& getDeviceId() const noexcept = 0;
-	
+
 
 		void mapToOrmModel(model_interface::IModel& model) const override
 		{
@@ -49,7 +49,7 @@ namespace drogon_model::defaultdb
 			sensorDataRequestModel.temperature = getTemperature() ? std::make_optional<double>(*getTemperature()) : std::nullopt;
 			sensorDataRequestModel.humidity = getHumidity() ? std::make_optional<double>(*getHumidity()) : std::nullopt;
 			sensorDataRequestModel.pressure = getPressure() ? std::make_optional<double>(*getPressure()) : std::nullopt;
-			sensorDataRequestModel.deviceId = getDeviceId() ? uuids::uuid().from_string(*getDeviceId())  : std::nullopt;
+			sensorDataRequestModel.deviceId = getDeviceId() ? *getDeviceId() : std::string();
 			if (getMeasureAt())
 			{
 				sensorDataRequestModel.date = getMeasureAt()->toDbString().substr(0, 10);
