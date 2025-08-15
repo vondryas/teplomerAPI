@@ -7,45 +7,46 @@
 
 #pragma once
 
-#include <drogon/HttpController.h>
-#include "ControllerBase.h"
 #include <facades/UsersFacade.h>
+#include <models/auth_model/AuthModel.h>
+#include "ControllerBase.h"
+#include <drogon/HttpController.h>
+#include <models/request_model/UsersRequest.h>
+#include <controllers/exceptionWrapper/TryNumberParsing.h>
+#include <controllers/exceptionWrapper/TryFacadeCall.h>
+#include <controllers/responses/Response.h>
 
 using namespace drogon;
 /**
  * @brief this class is created by the drogon_ctl command (drogon_ctl create controller -r UsersController).
  * this class is a restful API controller.
  */
-class UsersController:
-    public ControllerBase<facade::UsersFacade>,
-    public drogon::HttpController<UsersController>
+class UsersController :
+	public ControllerBase<facade::UsersFacade>,
+	public drogon::HttpController<UsersController>
 {
-  public:
-    METHOD_LIST_BEGIN
-    // use METHOD_ADD to add your custom processing function here;
-    METHOD_ADD(UsersController::getOne,"/{1}",Get,Options);
-    METHOD_ADD(UsersController::get,"",Get,Options);
-    METHOD_ADD(UsersController::create,"",Post,Options);
-    METHOD_ADD(UsersController::updateOne,"/{1}",Put,Options);
-    //METHOD_ADD(UsersController::update,"",Put,Options);
-    METHOD_ADD(UsersController::deleteOne,"/{1}",Delete,Options);
-    METHOD_LIST_END
+	using AuthModel = auth_model::AuthModel;
+	using UsersRequest = request_model::UsersRequest;
+	using Users = drogon_model::defaultdb::Users;
+	using UsersList = list_model::UsersList;
 
-    void getOne(const HttpRequestPtr &req,
-                std::function<void(const HttpResponsePtr &)> &&callback,
-                std::string &&id);
-    void updateOne(const HttpRequestPtr &req,
-                std::function<void(const HttpResponsePtr &)> &&callback,
-                std::string &&id);
-    void deleteOne(const HttpRequestPtr &req,
-                   std::function<void(const HttpResponsePtr &)> &&callback,
-                   std::string &&id);
-    void get(const HttpRequestPtr &req,
-             std::function<void(const HttpResponsePtr &)> &&callback);
-    void create(const HttpRequestPtr &req,
-                std::function<void(const HttpResponsePtr &)> &&callback);
+public:
+	METHOD_LIST_BEGIN
+		// use METHOD_ADD to add your custom processing function here;
+		ADD_METHOD_TO(UsersController::getOne, "user/{1}", Get, Options);
+	ADD_METHOD_TO(UsersController::get, "user", Get, Options);
+	ADD_METHOD_TO(UsersController::signUp, "auth", Post, Options);
+	ADD_METHOD_TO(UsersController::signIn, "auth", Get, Options);
+	ADD_METHOD_TO(UsersController::deleteOne, "user/{1}", Delete, Options);
+	METHOD_LIST_END
 
-//    void update(const HttpRequestPtr &req,
-//                std::function<void(const HttpResponsePtr &)> &&callback);
+		Task<HttpResponsePtr> getOne(const HttpRequestPtr req, const std::string& idStr);
+	Task<HttpResponsePtr> get(const HttpRequestPtr req);
+	Task<HttpResponsePtr> deleteOne(const HttpRequestPtr req, const std::string& id);
+	Task<HttpResponsePtr> signUp(const HttpRequestPtr req);
+	Task<HttpResponsePtr> signIn(const HttpRequestPtr req);
+
+	//    void update(const HttpRequestPtr &req,
+	//                std::function<void(const HttpResponsePtr &)> &&callback);
 
 };

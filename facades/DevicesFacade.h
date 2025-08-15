@@ -20,13 +20,13 @@ namespace facade
 		using DevicesRequest = request_model::DevicesRequest;
 	public:
 		DevicesFacade() = default;
-		/*
+		Task<Devices> create(const DevicesRequest& data) const;
 		Task<Devices> getById(const std::string& id) const; // Use drogon::Task
 		Task<DevicesList> getAll() const;
-		Task<DevicesList> getPaginated(const size_t page, const size_t limit) const;
-		Task<Devices> create(const DevicesRequest& data) const;
-		Task<size_t> update(const DevicesRequest& data) const;
 		Task<size_t> deleteById(const std::string& id) const;
+		/*
+		Task<DevicesList> getPaginated(const size_t page, const size_t limit) const;
+		Task<size_t> update(const DevicesRequest& data) const;
 		*/
 	};
 }

@@ -54,7 +54,7 @@ namespace request_model
 			std::string errorMessage;
 			if (userId.has_value())
 			{
-				result = result && uuids::uuid::is_valid_uuid(uuids::to_string(*userId));
+				//result = result && !userId->is_nil();
 				errorMessage += result ? "" : "Invalid UUID format for userId\n";
 			}
 			else
@@ -85,4 +85,26 @@ namespace request_model
 			return { true, "" };
 		}
 	};
+}
+
+namespace drogon
+{
+	template <>
+	inline request_model::DevicesRequest fromRequest<request_model::DevicesRequest>(const HttpRequest& req)
+	{
+		LOG_INFO << "parse request";
+		auto json = req.getJsonObject();
+		request_model::DevicesRequest data;
+		Json::Value& jsonRef = *json;
+
+		if (json)
+		{
+			LOG_INFO << "Received JSON: " << json->toStyledString();
+			data.name = jsonRef["name"].isNull() ? "" : jsonRef["name"].asString();
+			data.type = jsonRef["type"].isNull() ? std::nullopt : std::make_optional(jsonRef["type"].asInt());
+			data.userId = jsonRef["userId"].isNull() ? std::nullopt : std::make_optional(uuids::uuid::from_string(jsonRef["userId"].asString()).value());
+		}
+
+		return data;
+	}
 }

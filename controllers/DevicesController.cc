@@ -6,38 +6,97 @@
  */
 
 #include "DevicesController.h"
+#include <fmt/core.h>
 #include <string>
 
 
-void DevicesController::getOne(const HttpRequestPtr &req,
-                               std::function<void(const HttpResponsePtr &)> &&callback,
-                               std::string &&id)
+Task<HttpResponsePtr> DevicesController::getOne(const HttpRequestPtr req, const std::string& id)
 {
+	HttpResponsePtr resp = nullptr;
+	if (id.empty())
+	{
+		LOG_ERROR << "Id parameter is empty";
+		co_return responses::wrongRequestResponse("Id parameter is required");
+	}
+	if (!uuids::uuid::is_valid_uuid(id))
+	{
+		LOG_DEBUG << "Invalid UUID format for id: " << id;
+		co_return responses::wrongRequestResponse(fmt::format("Invalid UUID format for id: {}", id));
+	}
+	auto data = co_await coroTryFacadeCall(facade_->getById(id), "getById", id, resp);
+	if (!data.has_value()) {
+		co_return resp;
+	}
+	co_return responses::jsonOkResponse(data->toJson());
 }
 
-void DevicesController::get(const HttpRequestPtr &req,
-                            std::function<void(const HttpResponsePtr &)> &&callback)
+Task<HttpResponsePtr> DevicesController::get(const HttpRequestPtr req)
 {
+	HttpResponsePtr resp = nullptr;
+	std::optional<DevicesList> dataList;
+	dataList = co_await coroTryFacadeCall(facade_->getAll(), "getAll", "none", resp);
+	if (!dataList.has_value()) {
+		co_return resp;
+	}
+	co_return responses::jsonOkResponse(dataList->toJson());
 }
-void DevicesController::create(const HttpRequestPtr &req,
-                               std::function<void(const HttpResponsePtr &)> &&callback)
+
+Task<HttpResponsePtr> DevicesController::create(const HttpRequestPtr req)
 {
+	HttpResponsePtr resp = nullptr;
+	DevicesRequest data = fromRequest<DevicesRequest>(*req);
+	if (data.isEmpty())
+	{
+		LOG_ERROR << "Request data is empty";
+		co_return responses::wrongRequestResponse("Request data is required");
+	}
+	auto [result, errorMessage] = data.validateForCreate();
+	if (!result)
+	{
+		LOG_ERROR << "Request data not valid: " << errorMessage;
+		co_return responses::wrongRequestResponse(errorMessage);
+	}
+	auto createdDevice = co_await coroTryFacadeCall(
+		facade_->create(data),
+		"create",
+		fmt::format("name: {}, type: {}", data.name, *data.type),
+		resp
+	);
+	if (!createdDevice.has_value()) {
+		co_return resp;
+	}
+	co_return responses::jsonOkResponse(createdDevice->toJson());
 }
-void DevicesController::updateOne(const HttpRequestPtr &req,
-                                  std::function<void(const HttpResponsePtr &)> &&callback,
-                                  std::string &&id)
+
+Task<HttpResponsePtr> DevicesController::deleteOne(const HttpRequestPtr req, const std::string& id)
 {
+	HttpResponsePtr resp = nullptr;
+	if (id.empty())
+	{
+		LOG_ERROR << "Id parameter is empty";
+		co_return responses::wrongRequestResponse("Id parameter is required");
+	}
+	if (!uuids::uuid::is_valid_uuid(id))
+	{
+		LOG_DEBUG << "Invalid UUID format for id: " << id;
+		co_return responses::wrongRequestResponse(fmt::format("Invalid UUID format for id: {}", id));
+	}
+	auto deletedRows = co_await coroTryFacadeCall(
+		facade_->deleteById(id),
+		"deleteById",
+		id,
+		resp
+	);
+	if (!deletedRows.has_value()) {
+		co_return resp;
+	}
+	co_return responses::sizeOkResponse(*deletedRows);
 }
 
 /*
 void DevicesController::update(const HttpRequestPtr &req,
-                               std::function<void(const HttpResponsePtr &)> &&callback)
+							   std::function<void(const HttpResponsePtr &)> &&callback)
 {
 
 }*/
 
-void DevicesController::deleteOne(const HttpRequestPtr &req,
-                                  std::function<void(const HttpResponsePtr &)> &&callback,
-                                  std::string &&id)
-{
-}

@@ -25,7 +25,7 @@ namespace request_model
 		UsersRequest() = default;
 		inline bool isEmpty() const
 		{
-			return !id.has_value() && username.empty() && email.empty() 
+			return !id.has_value() && username.empty() && email.empty()
 				&& password.empty() && !role.has_value() && !remember.has_value();
 		}
 		void mapToOrmModel(model_interface::IModel& ormModel) const override;
@@ -75,6 +75,33 @@ namespace request_model
 				result = false;
 				errorMessage += "Email cannot be empty\n";
 			}
+			else if (email.find('@') == std::string::npos)
+			{
+				result = false;
+				errorMessage += "Email must contain '@'\n";
+			}
+			if (password.empty())
+			{
+				result = false;
+				errorMessage += "Password cannot be empty\n";
+			}
+			if (role.has_value() && (*role < 0 || *role > 1))
+			{
+				result = false;
+				errorMessage += "Role must be between 0 and 2\n";
+			}
+			return { result, errorMessage };
+		}
+
+		std::pair<bool, std::string> validateForLogin() const
+		{
+			bool result = true;
+			std::string errorMessage;
+			if (username.empty() && email.empty())
+			{
+				result = false;
+				errorMessage += "Username or email must be entered\n";
+			}
 			if (password.empty())
 			{
 				result = false;
@@ -83,4 +110,27 @@ namespace request_model
 			return { result, errorMessage };
 		}
 	};
+}
+
+namespace drogon
+{
+	template <>
+	inline request_model::UsersRequest fromRequest<request_model::UsersRequest>(const HttpRequest& req)
+	{
+		LOG_INFO << "parse request";
+		auto json = req.getJsonObject();
+		request_model::UsersRequest data;
+		Json::Value& jsonRef = *json;
+		if (json)
+		{
+			LOG_INFO << "Received JSON: " << json->toStyledString();
+			data.username = jsonRef["username"].isNull() ? "" : jsonRef["username"].asString();
+			data.email = jsonRef["email"].isNull() ? "" : jsonRef["email"].asString();
+			data.password = jsonRef["password"].isNull() ? "" : jsonRef["password"].asString();
+			data.role = jsonRef["role"].isNull() ? std::nullopt : std::make_optional(jsonRef["role"].asInt());
+			data.remember = jsonRef["remember"].isNull() ? false : jsonRef["remember"].asBool();
+		}
+
+		return data;
+	}
 }

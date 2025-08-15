@@ -7,5 +7,6 @@ int main() {
 
 	drogon::app().loadConfigFile("config.json");
 	drogon::app().run();
+	drogon::app().enableSession(0);
 	return 0;
 }

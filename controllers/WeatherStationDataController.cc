@@ -89,6 +89,24 @@ Task<HttpResponsePtr> WeatherStationDataController::get(const HttpRequestPtr req
 	co_return responses::jsonOkResponse(dataList->toJson());
 }
 
+Task<HttpResponsePtr> WeatherStationDataController::getByFilter(const HttpRequestPtr req)
+{
+	HttpResponsePtr resp = nullptr;
+	auto filter = fromRequest<filter_model::WeatherFilter>(*req);
+	std::optional<WeatherStationDataList> dataList;
+	dataList = co_await coroTryFacadeCall(
+		facade_->getByFilter(filter),
+		"getByFilter",
+		fmt::format("stationId: {}, startDate: {}, endDate: {}, orderBy: {}, limit: {}, offset: {}",
+			filter.stationId, filter.startDate, filter.endDate, filter.orderBy, filter.limit, filter.offset),
+		resp
+	);
+	if (!dataList.has_value()) {
+		co_return resp;
+	}
+	co_return responses::jsonOkResponse(dataList->toJson());
+}
+
 
 
 

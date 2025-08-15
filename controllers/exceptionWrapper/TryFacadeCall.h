@@ -54,7 +54,7 @@ coroTryFacadeCall(
 				fmt::format("Unexpected DB error in {} with id {}: {}", context, idStr, e.base().what()),
 				drogon::k500InternalServerError);
 		}
-		else if(unexpectedRows) {
+		else if (unexpectedRows) {
 			LOG_ERROR << "Database not found " << context << " with id " << idStr << ": " << e.base().what();
 			outErrorResp = responses::notFoundResponse(
 				fmt::format("Database not found {} with id {}: {}", context, idStr, e.base().what()));
@@ -65,6 +65,12 @@ coroTryFacadeCall(
 			outErrorResp = responses::wrongRequestResponse(
 				fmt::format("Database error in {} with {}: {}", context, idStr, e.base().what()));
 		}
+	}
+	catch (const std::exception& except)
+	{
+		LOG_ERROR << "Exception in " << context << " with id " << idStr << ": " << except.what();
+		outErrorResp = responses::wrongRequestResponse(
+			fmt::format("{}: {}", idStr, except.what()));
 	}
 
 	co_return std::nullopt;

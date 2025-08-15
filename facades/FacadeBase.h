@@ -10,10 +10,9 @@ namespace facade
 	{
 	public:
 		FacadeBase() {
-			LOG_INFO << "OK";
 		}
 		virtual ~FacadeBase() = default;
 	protected:
-		
+
 	};
 }

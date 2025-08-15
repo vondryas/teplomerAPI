@@ -27,13 +27,15 @@ public:
 		// use METHOD_ADD to add your custom processing function here;
 		ADD_METHOD_TO(WeatherStationDataController::getById, "weather/{1}", Get);
 	ADD_METHOD_TO(WeatherStationDataController::get, "weather", Get);
+	ADD_METHOD_TO(WeatherStationDataController::getByFilter, "weather/filter", Get);
 	ADD_METHOD_TO(WeatherStationDataController::updateOne, "weather", Put, "filters::JwtFilter");
-	ADD_METHOD_TO(WeatherStationDataController::deleteOne, "weather/{1}", Delete, "filters::JwtFilter");
-	ADD_METHOD_TO(WeatherStationDataController::create, "weather", Post);
+	ADD_METHOD_TO(WeatherStationDataController::deleteOne, "weather/{1}", Delete);
+	ADD_METHOD_TO(WeatherStationDataController::create, "weather", Post "filters::JwtFilter");
 	METHOD_LIST_END
 
 		Task<HttpResponsePtr> getById(const HttpRequestPtr req, const std::string& id);
 	Task<HttpResponsePtr> get(const HttpRequestPtr req);
+	Task<HttpResponsePtr> getByFilter(const HttpRequestPtr req);
 	Task<HttpResponsePtr> updateOne(const HttpRequestPtr req, const request_model::WeatherStationDataRequest& data);
 	Task<HttpResponsePtr> deleteOne(const HttpRequestPtr req, const std::string& id);
 	Task<HttpResponsePtr> create(const HttpRequestPtr req, const request_model::WeatherStationDataRequest& data);

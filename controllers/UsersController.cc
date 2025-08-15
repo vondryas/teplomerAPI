@@ -5,39 +5,123 @@
  *
  */
 
-#include "UsersController.h"
 #include <string>
+#include "UsersController.h"
 
-
-void UsersController::getOne(const HttpRequestPtr &req,
-                             std::function<void(const HttpResponsePtr &)> &&callback,
-                             std::string &&id)
+Task<HttpResponsePtr> UsersController::signUp(const HttpRequestPtr req)
 {
+	HttpResponsePtr resp = nullptr;
+	UsersRequest userRequest = fromRequest<UsersRequest>(*req);
+	std::optional<auth_model::AuthModel> authModel;
+	if (userRequest.isEmpty())
+	{
+		LOG_ERROR << "Request data is empty";
+		co_return responses::wrongRequestResponse("Sign up data is required");
+	}
+	auto&& [res, error] = userRequest.validateForCreate();
+	if (!res)
+	{
+		LOG_ERROR << "Request data not valid: " << error;
+		co_return responses::wrongRequestResponse(error);
+	}
+
+	authModel = co_await coroTryFacadeCall(
+		facade_->create(userRequest),
+		"signUp",
+		fmt::format("email: {}, username: {}", userRequest.email, userRequest.username),
+		resp
+	);
+	if (!authModel.has_value()) {
+		co_return resp;
+	}
+	req->session()->insert("Authorization", authModel->token);
+	co_return responses::jsonOkResponse(authModel->toJson());
 }
 
-void UsersController::get(const HttpRequestPtr &req,
-                          std::function<void(const HttpResponsePtr &)> &&callback)
+Task<HttpResponsePtr> UsersController::signIn(const HttpRequestPtr req)
 {
-}
-void UsersController::create(const HttpRequestPtr &req,
-                             std::function<void(const HttpResponsePtr &)> &&callback)
-{
-}
-void UsersController::updateOne(const HttpRequestPtr &req,
-                                std::function<void(const HttpResponsePtr &)> &&callback,
-                                std::string &&id)
-{
+	HttpResponsePtr resp = nullptr;
+	std::optional<auth_model::AuthModel> authModel;
+	UsersRequest userRequest = fromRequest<UsersRequest>(*req);
+	if (userRequest.isEmpty())
+	{
+		LOG_ERROR << "Request data is empty";
+		co_return responses::wrongRequestResponse("Sign in data is required");
+	}
+	auto&& [res, error] = userRequest.validateForLogin();
+	if (!res)
+	{
+		LOG_ERROR << "Request data not valid: " << error;
+		co_return responses::wrongRequestResponse(error);
+	}
+	authModel = co_await coroTryFacadeCall(
+		facade_->login(userRequest),
+		"signIn",
+		fmt::format("email: {}, username: {}", userRequest.email, userRequest.username),
+		resp
+	);
+	if (!authModel.has_value()) {
+		co_return resp;
+	}
+	req->session()->insert("Authorization", authModel->token);
+	co_return responses::jsonOkResponse(authModel->toJson());
 }
 
-/*
-void UsersController::update(const HttpRequestPtr &req,
-                             std::function<void(const HttpResponsePtr &)> &&callback)
+Task<HttpResponsePtr> UsersController::getOne(const HttpRequestPtr req, const std::string& idStr)
 {
+	HttpResponsePtr resp = nullptr;
+	if (idStr.empty())
+	{
+		LOG_ERROR << "Id parameter is empty";
+		co_return responses::wrongRequestResponse("Id parameter is required");
+	}
+	if (!uuids::uuid::is_valid_uuid(idStr))
+	{
+		LOG_DEBUG << "Invalid UUID format for id: " << idStr;
+		co_return responses::wrongRequestResponse(fmt::format("Invalid UUID format for id: {}", idStr));
+	}
 
-}*/
+	auto data = co_await coroTryFacadeCall(facade_->getById(idStr), "getById", idStr, resp);
+	if (!data.has_value()) {
+		co_return resp;
+	}
 
-void UsersController::deleteOne(const HttpRequestPtr &req,
-                                std::function<void(const HttpResponsePtr &)> &&callback,
-                                std::string &&id)
-{
+	co_return responses::jsonOkResponse(data->toJson());
 }
+
+Task<HttpResponsePtr> UsersController::get(const HttpRequestPtr req)
+{
+	HttpResponsePtr resp = nullptr;
+	std::optional<UsersList> dataList;
+	dataList = co_await coroTryFacadeCall(facade_->getAll(), "getAll", "none", resp);
+	if (!dataList.has_value()) {
+		co_return resp;
+	}
+	co_return responses::jsonOkResponse(dataList->toJson());
+}
+
+Task<HttpResponsePtr> UsersController::deleteOne(const HttpRequestPtr req, const std::string& id)
+{
+	HttpResponsePtr resp = nullptr;
+	if (id.empty())
+	{
+		LOG_ERROR << "Id parameter is empty";
+		co_return responses::wrongRequestResponse("Id parameter is required");
+	}
+	if (!uuids::uuid::is_valid_uuid(id))
+	{
+		LOG_DEBUG << "Invalid UUID format for id: " << id;
+		co_return responses::wrongRequestResponse(fmt::format("Invalid UUID format for id: {}", id));
+	}
+	auto deletedRows = co_await coroTryFacadeCall(
+		facade_->deleteById(id),
+		"deleteById",
+		id,
+		resp
+	);
+	if (!deletedRows.has_value()) {
+		co_return resp;
+	}
+	co_return responses::sizeOkResponse(*deletedRows);
+}
+

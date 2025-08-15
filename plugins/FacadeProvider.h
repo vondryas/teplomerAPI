@@ -1,7 +1,11 @@
 #pragma once
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 
-#include <drogon/plugins/Plugin.h>
+
 #include <facades/FacadeBase.h>
+#include <drogon/plugins/Plugin.h>
 
 #include <memory>
 #include <typeindex>

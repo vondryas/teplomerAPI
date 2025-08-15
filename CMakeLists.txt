@@ -147,6 +147,8 @@ set(SOURCE_DIRS
     models/model_utils
     models/model_mapper
     models/model_interface
+    models/filter_model
+    models/auth_model
     facades
     facades/utils/jwt
     facades/utils/passwdhash

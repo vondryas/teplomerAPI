@@ -579,14 +579,6 @@ Json::Value Users::toJson() const
     {
         ret["email"]=Json::Value();
     }
-    if(getPasshash())
-    {
-        ret["passhash"]=getValueOfPasshash();
-    }
-    else
-    {
-        ret["passhash"]=Json::Value();
-    }
     if(getRole())
     {
         ret["role"]=getValueOfRole();

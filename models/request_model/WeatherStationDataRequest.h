@@ -96,3 +96,47 @@ namespace request_model
 		}
 	};
 }
+
+namespace drogon
+{
+	template <>
+	inline request_model::WeatherStationDataRequest fromRequest<request_model::WeatherStationDataRequest>(const HttpRequest& req)
+	{
+		LOG_INFO << "parse request";
+		auto json = req.getJsonObject();
+		request_model::WeatherStationDataRequest data;
+		Json::Value& jsonRef = *json;
+		if (json)
+		{
+			if (!(*json)["end_device_ids"].isNull())
+			{
+				jsonRef = (*json)["end_device_ids"];
+				data.deviceId = jsonRef["device_id"].isNull() ? "" : jsonRef["device_id"].asString();
+			}
+			else
+			{
+				data.deviceId = (*json)["deviceId"].isNull() ? "" : (*json)["deviceId"].asString();
+			}
+
+			jsonRef = *json;
+
+			if (!(*json)["uplink_message"]["decoded_payload"].isNull())
+			{
+				jsonRef = (*json)["uplink_message"]["decoded_payload"];
+			}
+
+
+			LOG_INFO << "Received JSON: " << json->toStyledString();
+			data.pressure = jsonRef["pressure"].isNull() ? std::nullopt : std::make_optional(jsonRef["pressure"].asDouble());
+			data.temperature = jsonRef["temperature"].isNull() ? std::nullopt : std::make_optional(jsonRef["temperature"].asDouble());
+			data.humidity = jsonRef["humidity"].isNull() ? std::nullopt : std::make_optional(jsonRef["humidity"].asDouble());
+			data.battery = jsonRef["battery"].isNull() ? std::nullopt : std::make_optional(jsonRef["battery"].asInt());
+			data.date = jsonRef["date"].isNull() ? "" : jsonRef["date"].asString();
+			data.time = jsonRef["time"].isNull() ? "" : jsonRef["time"].asString();
+			data.id = jsonRef["id"].isNull() ? std::nullopt : std::make_optional(uuids::uuid::from_string(jsonRef["id"].asString()).value());
+
+		}
+
+		return data;
+	}
+}

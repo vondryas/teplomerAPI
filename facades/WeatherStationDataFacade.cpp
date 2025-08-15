@@ -39,6 +39,70 @@ Task<WeatherStationDataList> facade::WeatherStationDataFacade::getPaginated(cons
 	co_return WeatherStationDataList;
 }
 
+Task<WeatherStationDataList> facade::WeatherStationDataFacade::getByFilter(const WeatherFilter& filter) const
+{
+	auto mapper = drogon::orm::CoroMapper<WeatherStationData>(drogon::app().getFastDbClient());
+	drogon::orm::Criteria criteria;
+	if (!filter.stationId.empty())
+	{
+		criteria = criteria && drogon::orm::Criteria(WeatherStationData::Cols::_device_id, drogon::orm::CompareOperator::EQ, filter.stationId);
+	}
+	if (!filter.startDate.empty())
+	{
+		criteria = criteria && drogon::orm::Criteria(WeatherStationData::Cols::_measure_at, drogon::orm::CompareOperator::GE, filter.startDate);
+	}
+	if (!filter.endDate.empty())
+	{
+		criteria = criteria && drogon::orm::Criteria(WeatherStationData::Cols::_measure_at, drogon::orm::CompareOperator::LE, filter.endDate);
+	}
+	if (!filter.orderBy.empty())
+	{
+		if (filter.orderBy == "measure_at")
+		{
+			if (filter.orderDirection == "DESC")
+			{
+				mapper = mapper.orderBy(WeatherStationData::Cols::_measure_at, drogon::orm::SortOrder::DESC);
+			}
+			else
+			{
+				mapper = mapper.orderBy(WeatherStationData::Cols::_measure_at, drogon::orm::SortOrder::ASC);
+			}
+		}
+		else if (filter.orderBy == "device_id")
+		{
+			if (filter.orderDirection == "DESC")
+			{
+				mapper = mapper.orderBy(WeatherStationData::Cols::_device_id, drogon::orm::SortOrder::DESC);
+			}
+			else
+			{
+				mapper = mapper.orderBy(WeatherStationData::Cols::_device_id, drogon::orm::SortOrder::ASC);
+			}
+		}
+	}
+	int offset = 1;
+	int limit = 20;
+	WeatherStationDataList weatherStationDataList;
+	if (filter.limit > 0 || filter.offset > 1)
+	{
+		if (filter.limit > 0)
+		{
+			limit = filter.limit;
+		}
+		if (filter.offset > 1)
+		{
+			offset = filter.offset;
+		}
+		mapper = mapper.paginate(offset, limit);
+	}
+	auto sensorData = co_await mapper.findBy(criteria);
+	weatherStationDataList.setData(mvector<WeatherStationData>(sensorData));
+	weatherStationDataList.setTotalCount(co_await mapper.count());
+	weatherStationDataList.setLimit(limit);
+	weatherStationDataList.setPage(offset);
+	co_return weatherStationDataList;
+}
+
 Task<WeatherStationData> facade::WeatherStationDataFacade::create(const request_model::WeatherStationDataRequest& data) const
 {
 	auto mapper = drogon::orm::CoroMapper<WeatherStationData>(drogon::app().getFastDbClient());

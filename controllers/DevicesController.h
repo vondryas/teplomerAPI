@@ -10,6 +10,11 @@
 #include <drogon/HttpController.h>
 #include "ControllerBase.h"
 #include <facades/DevicesFacade.h>
+#include <models/orm_model/Devices.h>
+#include <models/request_model/DevicesRequest.h>
+#include <controllers/exceptionWrapper/TryNumberParsing.h>
+#include <controllers/exceptionWrapper/TryFacadeCall.h>
+#include <controllers/responses/Response.h>
 
 using namespace drogon;
 /**
@@ -20,30 +25,23 @@ class DevicesController:
     public ControllerBase<facade::DevicesFacade>,
     public drogon::HttpController<DevicesController>
 {
+    using Devices = drogon_model::defaultdb::Devices;
+    using DevicesList = list_model::DevicesList;
+    using DevicesRequest = request_model::DevicesRequest;
   public:
     METHOD_LIST_BEGIN
     // use METHOD_ADD to add your custom processing function here;
-    METHOD_ADD(DevicesController::getOne,"/{1}",Get,Options);
-    METHOD_ADD(DevicesController::get,"",Get,Options);
-    METHOD_ADD(DevicesController::create,"",Post,Options);
-    METHOD_ADD(DevicesController::updateOne,"/{1}",Put,Options);
+        ADD_METHOD_TO(DevicesController::getOne,"device/{1}",Get,Options);
+    ADD_METHOD_TO(DevicesController::get,"device",Get,Options);
+    ADD_METHOD_TO(DevicesController::create,"device",Post,Options);
     //METHOD_ADD(DevicesController::update,"",Put,Options);
-    METHOD_ADD(DevicesController::deleteOne,"/{1}",Delete,Options);
+    ADD_METHOD_TO(DevicesController::deleteOne,"device/{1}",Delete,Options);
     METHOD_LIST_END
 
-    void getOne(const HttpRequestPtr &req,
-                std::function<void(const HttpResponsePtr &)> &&callback,
-                std::string &&id);
-    void updateOne(const HttpRequestPtr &req,
-                std::function<void(const HttpResponsePtr &)> &&callback,
-                std::string &&id);
-    void deleteOne(const HttpRequestPtr &req,
-                   std::function<void(const HttpResponsePtr &)> &&callback,
-                   std::string &&id);
-    void get(const HttpRequestPtr &req,
-             std::function<void(const HttpResponsePtr &)> &&callback);
-    void create(const HttpRequestPtr &req,
-                std::function<void(const HttpResponsePtr &)> &&callback);
+        Task<HttpResponsePtr> getOne(const HttpRequestPtr req, const std::string &id);
+    Task<HttpResponsePtr> deleteOne(const HttpRequestPtr req, const std::string &id);
+    Task<HttpResponsePtr> get(const HttpRequestPtr req);
+    Task<HttpResponsePtr> create(const HttpRequestPtr req);
 
 //    void update(const HttpRequestPtr &req,
 //                std::function<void(const HttpResponsePtr &)> &&callback);
