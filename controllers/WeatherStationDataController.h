@@ -9,6 +9,8 @@
 
 #include <drogon/HttpController.h>
 #include <facades/WeatherStationDataFacade.h>
+#include <models/request_model/WeatherStationDataRequest.h>
+#include <models/list_model/WeatherStationDataList.h>
 #include "ControllerBase.h"
 #include <controllers/exceptionWrapper/TryFacadeCall.h>
 #include <controllers/exceptionWrapper/TryNumberParsing.h>
@@ -30,7 +32,7 @@ public:
 	ADD_METHOD_TO(WeatherStationDataController::getByFilter, "weather/filter", Get);
 	ADD_METHOD_TO(WeatherStationDataController::updateOne, "weather", Put, "filters::JwtFilter");
 	ADD_METHOD_TO(WeatherStationDataController::deleteOne, "weather/{1}", Delete);
-	ADD_METHOD_TO(WeatherStationDataController::create, "weather", Post "filters::JwtFilter");
+	ADD_METHOD_TO(WeatherStationDataController::create, "weather", Post, "filters::JwtFilter");
 	METHOD_LIST_END
 
 		Task<HttpResponsePtr> getById(const HttpRequestPtr req, const std::string& id);
