@@ -1,6 +1,37 @@
 #include "WeatherStationDataRequest.h"
 #include <models/orm_model/WeatherStationData.h>
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <string>
 
+
+std::vector<std::string> split(const std::string& str, char delimiter) {
+	std::vector<std::string> tokens;
+	std::stringstream ss(str);
+	std::string token;
+
+	while (std::getline(ss, token, delimiter)) {
+		tokens.push_back(token);
+	}
+	return tokens;
+}
+
+void request_model::WeatherStationDataRequest::correctDate()
+{
+	// split date string
+	std::vector<std::string> dateParts = split(date, '-');
+	// if date is in format YYYY-MM-DD do nothing
+	// if date is in format DD-MM-YYYY convert to YYYY-MM-DD
+	if (dateParts.size() == 3)
+	{
+		if (dateParts[0].size() == 2 && dateParts[2].size() >= 4)
+		{
+			std::string newDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+			date = newDate;
+		}
+	}
+}
 
 void request_model::WeatherStationDataRequest::mapToOrmModel(model_interface::IModel& ormModel) const
 {

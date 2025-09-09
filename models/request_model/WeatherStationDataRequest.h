@@ -94,6 +94,9 @@ namespace request_model
 			}
 			return { result, errorMessage };
 		}
+
+	public:
+		void correctDate();
 	};
 }
 
@@ -105,38 +108,39 @@ namespace drogon
 		LOG_INFO << "parse request";
 		auto json = req.getJsonObject();
 		request_model::WeatherStationDataRequest data;
-		Json::Value& jsonRef = *json;
+		LOG_INFO << "Received JSON: " << json->toStyledString();
 		if (json)
 		{
-			if (!(*json)["end_device_ids"].isNull())
+			if (!(*json)["uplink_message"]["decoded_payload"].isNull())
 			{
-				jsonRef = (*json)["end_device_ids"];
-				data.deviceId = jsonRef["device_id"].isNull() ? "" : jsonRef["device_id"].asString();
+				data.pressure = (*json)["uplink_message"]["decoded_payload"]["pressure"].isNull() ? std::nullopt : std::make_optional((*json)["uplink_message"]["decoded_payload"]["pressure"].asDouble());
+				data.temperature = (*json)["uplink_message"]["decoded_payload"]["temperature"].isNull() ? std::nullopt : std::make_optional((*json)["uplink_message"]["decoded_payload"]["temperature"].asDouble());
+				data.humidity = (*json)["uplink_message"]["decoded_payload"]["humidity"].isNull() ? std::nullopt : std::make_optional((*json)["uplink_message"]["decoded_payload"]["humidity"].asDouble());
+				data.battery = (*json)["uplink_message"]["decoded_payload"]["battery"].isNull() ? std::nullopt : std::make_optional((*json)["uplink_message"]["decoded_payload"]["battery"].asInt());
+				data.date = (*json)["uplink_message"]["decoded_payload"]["date"].isNull() ? "" : (*json)["uplink_message"]["decoded_payload"]["date"].asString();
+				data.time = (*json)["uplink_message"]["decoded_payload"]["time"].isNull() ? "" : (*json)["uplink_message"]["decoded_payload"]["time"].asString();
+				data.id = (*json)["uplink_message"]["decoded_payload"]["id"].isNull() ? std::nullopt : std::make_optional(uuids::uuid::from_string((*json)["uplink_message"]["decoded_payload"]["id"].asString()).value());
+			}
+			else
+			{
+				data.pressure = (*json)["pressure"].isNull() ? std::nullopt : std::make_optional((*json)["pressure"].asDouble());
+				data.temperature = (*json)["temperature"].isNull() ? std::nullopt : std::make_optional((*json)["temperature"].asDouble());
+				data.humidity = (*json)["humidity"].isNull() ? std::nullopt : std::make_optional((*json)["humidity"].asDouble());
+				data.battery = (*json)["battery"].isNull() ? std::nullopt : std::make_optional((*json)["battery"].asInt());
+				data.date = (*json)["date"].isNull() ? "" : (*json)["date"].asString();
+				data.time = (*json)["time"].isNull() ? "" : (*json)["time"].asString();
+				data.id = (*json)["id"].isNull() ? std::nullopt : std::make_optional(uuids::uuid::from_string((*json)["id"].asString()).value());
+			}
+			if (!(*json)["end_device_ids"]["device_id"].isNull())
+			{
+				data.deviceId = (*json)["end_device_ids"]["device_id"].isNull() ? "" : (*json)["end_device_ids"]["device_id"].asString();
 			}
 			else
 			{
 				data.deviceId = (*json)["deviceId"].isNull() ? "" : (*json)["deviceId"].asString();
 			}
-
-			jsonRef = *json;
-
-			if (!(*json)["uplink_message"]["decoded_payload"].isNull())
-			{
-				jsonRef = (*json)["uplink_message"]["decoded_payload"];
-			}
-
-
-			LOG_INFO << "Received JSON: " << json->toStyledString();
-			data.pressure = jsonRef["pressure"].isNull() ? std::nullopt : std::make_optional(jsonRef["pressure"].asDouble());
-			data.temperature = jsonRef["temperature"].isNull() ? std::nullopt : std::make_optional(jsonRef["temperature"].asDouble());
-			data.humidity = jsonRef["humidity"].isNull() ? std::nullopt : std::make_optional(jsonRef["humidity"].asDouble());
-			data.battery = jsonRef["battery"].isNull() ? std::nullopt : std::make_optional(jsonRef["battery"].asInt());
-			data.date = jsonRef["date"].isNull() ? "" : jsonRef["date"].asString();
-			data.time = jsonRef["time"].isNull() ? "" : jsonRef["time"].asString();
-			data.id = jsonRef["id"].isNull() ? std::nullopt : std::make_optional(uuids::uuid::from_string(jsonRef["id"].asString()).value());
-
 		}
-
+		data.correctDate();
 		return data;
 	}
 }
