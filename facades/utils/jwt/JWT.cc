@@ -40,7 +40,7 @@ std::map<std::string, std::any> JWT::decodeToken(const std::string& encodedToken
 			return attributes;
 		}
 
-		throw std::exception("no");
+		throw std::exception();
 	}
 	catch (const std::exception& e) {
 		(void)e; // Suppress unused variable warning
