@@ -14,6 +14,7 @@
 #include "ControllerBase.h"
 #include <controllers/exceptionWrapper/TryFacadeCall.h>
 #include <controllers/exceptionWrapper/TryNumberParsing.h>
+#include <filters/FilterAliases.h>
 
 using namespace drogon;
 /**
@@ -30,9 +31,9 @@ public:
 		ADD_METHOD_TO(WeatherStationDataController::getById, "weather/{1}", Get);
 	ADD_METHOD_TO(WeatherStationDataController::get, "weather", Get);
 	ADD_METHOD_TO(WeatherStationDataController::getByFilter, "weather/filter", Get);
-	ADD_METHOD_TO(WeatherStationDataController::updateOne, "weather", Put, "filters::JwtFilter");
-	ADD_METHOD_TO(WeatherStationDataController::deleteOne, "weather/{1}", Delete);
-	ADD_METHOD_TO(WeatherStationDataController::create, "weather", Post, "filters::JwtFilter");
+	ADD_METHOD_TO(WeatherStationDataController::updateOne, "weather", Put, OwnerFilter);
+	ADD_METHOD_TO(WeatherStationDataController::deleteOne, "weather/{1}", Delete, OwnerFilter);
+	ADD_METHOD_TO(WeatherStationDataController::create, "weather", Post, OwnerFilter);
 	METHOD_LIST_END
 
 		Task<HttpResponsePtr> getById(const HttpRequestPtr req, const std::string& id);

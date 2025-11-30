@@ -4,6 +4,7 @@
 #include <memory>
 #include "responses/Response.h"
 
+
 // This is a base class for controllers that provides access to a specific facade.
 // Type T should be a derived class of facade::FacadeBase.
 template <class T>

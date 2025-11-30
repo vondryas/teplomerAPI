@@ -50,6 +50,9 @@ Task<HttpResponsePtr> DevicesController::create(const HttpRequestPtr req)
 		LOG_ERROR << "Request data is empty";
 		co_return responses::wrongRequestResponse("Request data is required");
 	}
+	data.userId = uuids::uuid::from_string(
+		req->getAttributes()->get<std::string>("jwt_id")
+	);
 	auto [result, errorMessage] = data.validateForCreate();
 	if (!result)
 	{

@@ -4,6 +4,7 @@
 config.json
 models/orm_model/model.json
 .env
+out
 
 ### C ###
 # Prerequisites

@@ -30,7 +30,6 @@ std::string anyToString(const std::any& value)
 void JwtFilter::doFilter(const HttpRequestPtr& request, FilterCallback&& fcb, FilterChainCallback&& fccb) {
 	// Skip the verification on method Options
 	if (request->getMethod() == HttpMethod::Options) return fccb();
-	LOG_DEBUG << "JWT Filter: Verifying JWT token...";
 
 	std::string token;
 
@@ -60,7 +59,6 @@ void JwtFilter::doFilter(const HttpRequestPtr& request, FilterCallback&& fcb, Fi
 	for (auto& attribute : jwtAttributes)
 	{
 		request->getAttributes()->insert("jwt_" + attribute.first, attribute.second);
-		LOG_COMPACT_INFO << "JWT attribute: " << attribute.first << " = " << anyToString(attribute.second);
 	}
 
 	// If everything is right, just move to other endpoint

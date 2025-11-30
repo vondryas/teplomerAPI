@@ -15,6 +15,7 @@
 #include <controllers/exceptionWrapper/TryNumberParsing.h>
 #include <controllers/exceptionWrapper/TryFacadeCall.h>
 #include <controllers/responses/Response.h>
+#include <filters/FilterAliases.h>
 
 using namespace drogon;
 /**
@@ -37,8 +38,7 @@ public:
 	ADD_METHOD_TO(UsersController::get, "user", Get, Options);
 	ADD_METHOD_TO(UsersController::signUp, "auth", Post, Options);
 	ADD_METHOD_TO(UsersController::signIn, "auth", Get, Options);
-	ADD_METHOD_TO(UsersController::deleteOne, "user/{1}", Delete, Options);
-	ADD_METHOD_TO(UsersController::health, "health", Get, Options);
+	ADD_METHOD_TO(UsersController::deleteOne, "user/{1}", Delete, Options, OwnerFilter);
 	METHOD_LIST_END
 
 		Task<HttpResponsePtr> getOne(const HttpRequestPtr req, const std::string& idStr);
@@ -46,7 +46,6 @@ public:
 	Task<HttpResponsePtr> deleteOne(const HttpRequestPtr req, const std::string& id);
 	Task<HttpResponsePtr> signUp(const HttpRequestPtr req);
 	Task<HttpResponsePtr> signIn(const HttpRequestPtr req);
-	Task<HttpResponsePtr> health(const HttpRequestPtr req);
 
 	//    void update(const HttpRequestPtr &req,
 	//                std::function<void(const HttpResponsePtr &)> &&callback);

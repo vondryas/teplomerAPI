@@ -57,7 +57,7 @@ else()
 endif()
 
 # Executable setup
-add_executable(${PROJECT_NAME} main.cc "models/list_model/UsersList.h")
+add_executable(${PROJECT_NAME} main.cc "models/list_model/UsersList.h"  "filters/Cors.h")
 
 # Drogon configuration - supports both local and installed versions
 option(USE_LOCAL_DROGON "Use local Drogon subdirectory" OFF)
@@ -134,6 +134,9 @@ configure_file(${CMAKE_SOURCE_DIR}/config_template.json
 configure_file(${CMAKE_SOURCE_DIR}/models/orm_model/model_template.json
                ${CMAKE_SOURCE_DIR}/models/orm_model/model.json)
 
+configure_file(${CMAKE_SOURCE_DIR}/openapi.json
+               ${CMAKE_BINARY_DIR}/openapi.json)
+
 # Source file collection with platform-specific considerations
 set(SOURCE_DIRS
     controllers
@@ -202,8 +205,7 @@ endif()
 
 # Platform-specific configurations
 if(WIN32)
-    # Windows-specific settings
-    target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00 NOMINMAX)
 elseif(APPLE)
     # macOS-specific settings
     find_library(COREFOUNDATION CoreFoundation)

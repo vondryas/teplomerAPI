@@ -67,11 +67,6 @@ Task<HttpResponsePtr> UsersController::signIn(const HttpRequestPtr req)
 	co_return responses::jsonOkResponse(authModel->toJson());
 }
 
-Task<HttpResponsePtr> UsersController::health(const HttpRequestPtr req)
-{
-	co_return responses::sizeOkResponse(1);
-}
-
 Task<HttpResponsePtr> UsersController::getOne(const HttpRequestPtr req, const std::string& idStr)
 {
 	HttpResponsePtr resp = nullptr;

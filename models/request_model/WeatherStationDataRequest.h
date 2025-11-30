@@ -138,6 +138,9 @@ namespace drogon
 			else
 			{
 				data.deviceId = (*json)["deviceId"].isNull() ? "" : (*json)["deviceId"].asString();
+				if (data.deviceId == "") {
+					data.deviceId = (*json)["device_id"].isNull() ? "" : (*json)["device_id"].asString();
+				}
 			}
 		}
 		data.correctDate();

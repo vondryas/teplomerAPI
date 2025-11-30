@@ -325,13 +325,91 @@
     }
     */
   ],
-  //custom_config: custom configuration for users. This object can be get by the app().getCustomConfig() method. 
+  //custom_config: custom configuration for users. This object can be get by the app().getCustomConfig() method.
   "custom_config": {
     // JsonWebTokens configuration
     "jwt": {
       "private_key": "@AUTH_KEY@",
       "issuer": "@ISSUER@",
       "audience": "teplomerapi"
+    },
+    "ownership": {
+      // ----- USER -----
+      // user/{id} (DELETE) – id je v URL
+      "user": {
+        "baseTable": "users",
+        "idColumn": "id",
+        "ownerColumn": "id",
+        "idInPath": true
+        // bodyIdField prázdné -> id se bere jen z path
+      },
+
+      // ----- DEVICE -----
+      // device/{id} (GET, DELETE) – id je v URL
+      "device": {
+        "baseTable": "devices",
+        "idColumn": "name",
+        "ownerColumn": "user_id",
+        "idInPath": true
+        // bodyIdField prázdné -> id se bere jen z path
+      },
+
+      // ----- WEATHER STATION DATA -----
+      // a) GET /weather/{id}, DELETE /weather/{id}
+      //    weather_station_data.id -> weather_station_data.device_id -> devices.name -> devices.user_id
+      "weather": {
+        "baseTable": "weather_station_data",
+        "idColumn": "id",
+        "ownerColumn": "user_id",
+        "idInPath": true,
+        "joins": [
+          {
+            "table": "devices",
+            "localColumn": "device_id", // weather_station_data.device_id
+            "foreignColumn": "name" // devices.name
+          }
+        ]
+      },
+
+      // b) PUT /weather (update podle ID v JSONu)
+      //    stejné joiny jako výše, jen ID nebere z URL, ale z body["id"]
+      "weather:PUT": {
+        "baseTable": "weather_station_data",
+        "idColumn": "id",
+        "ownerColumn": "user_id",
+        "idInPath": false,
+        // VŠECHNY varianty, jak může přijít device ID v JSONu:
+        "bodyIdPaths": [
+          [ "deviceId" ], // { "deviceId": "rteplomer-1" }
+          [ "device_id" ], // { "device_id": "rteplomer-1" }
+          [ "end_device_ids", "device_id" ] // { "end_device_ids": { "device_id": "rteplomer-1" }, ... }
+        ],
+        "joins": [
+          {
+            "table": "devices",
+            "localColumn": "device_id",
+            "foreignColumn": "name"
+          }
+        ]
+      },
+
+      // c) POST /weather (create) – tady ještě žádný řádek v weather_station_data není,
+      //    takže kontrolujeme vlastníka přes devices:
+      //
+      //    JSON body:  { "deviceId": "some-device-name", ... }
+      //    -> SELECT 1 FROM devices WHERE name = $1 AND user_id = $2
+      "weather:POST": {
+        "baseTable": "devices",
+        "idColumn": "name",
+        "ownerColumn": "user_id",
+        "idInPath": false,
+        // VŠECHNY varianty, jak může přijít device ID v JSONu:
+        "bodyIdPaths": [
+          [ "deviceId" ], // { "deviceId": "rteplomer-1" }
+          [ "device_id" ], // { "device_id": "rteplomer-1" }
+          [ "end_device_ids", "device_id" ] // { "end_device_ids": { "device_id": "rteplomer-1" }, ... }
+        ]
+      }
     }
   }
 }

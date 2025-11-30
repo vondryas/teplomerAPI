@@ -15,6 +15,7 @@
 #include <controllers/exceptionWrapper/TryNumberParsing.h>
 #include <controllers/exceptionWrapper/TryFacadeCall.h>
 #include <controllers/responses/Response.h>
+#include <filters/FilterAliases.h>
 
 using namespace drogon;
 /**
@@ -33,9 +34,9 @@ class DevicesController:
     // use METHOD_ADD to add your custom processing function here;
         ADD_METHOD_TO(DevicesController::getOne,"device/{1}",Get,Options);
     ADD_METHOD_TO(DevicesController::get,"device",Get,Options);
-    ADD_METHOD_TO(DevicesController::create,"device",Post,Options);
+    ADD_METHOD_TO(DevicesController::create,"device",Post,Options, LoginFilter);
     //METHOD_ADD(DevicesController::update,"",Put,Options);
-    ADD_METHOD_TO(DevicesController::deleteOne,"device/{1}",Delete,Options);
+    ADD_METHOD_TO(DevicesController::deleteOne,"device/{1}",Delete,Options, OwnerFilter);
     METHOD_LIST_END
 
         Task<HttpResponsePtr> getOne(const HttpRequestPtr req, const std::string &id);
