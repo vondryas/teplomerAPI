@@ -8,7 +8,7 @@ void setupCors()
 	// ===== WHITELIST ORIGINÙ =====
 	static const std::vector<std::string> allowedOrigins = {
 		"https://teplomer-frontend.onrender.com",    // produkèní frontend
-		"http://89.24.36.197:4200",                      // Angular dev
+		"http://localhost:4200",                      // Angular dev
 	};
 
 	auto isAllowed = [&](const std::string& origin) {
@@ -69,14 +69,16 @@ void setupCors()
 			const drogon::HttpResponsePtr& resp) {
 
 				const auto& origin = req->getHeader("Origin");
-				if (origin.empty())
+				if (origin.empty()) {
 					LOG_INFO << "CORS: No Origin header present";
-				return;
+					return;
+				}
 
 				// Pokud origin není whitelisted ? nevracíme nic
-				if (!isAllowed(origin))
+				if (!isAllowed(origin)) {
 					LOG_INFO << "CORS: Origin " << origin << " not allowed";
-				return;
+					return;
+				}
 
 				// Povolit jen konkrétní origin
 				resp->addHeader("Access-Control-Allow-Origin", origin);

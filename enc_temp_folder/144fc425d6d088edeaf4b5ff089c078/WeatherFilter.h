@@ -51,9 +51,10 @@ namespace drogon
 		LOG_INFO << "parse request";
 		auto json = req.getJsonObject();
 		filter_model::WeatherFilter data;
+
 		if (json)
 		{
-			LOG_INFO << "Received JSON: " << json->toStyledString();
+
 			data.stationId = (*json)["stationId"].isNull() ? "" : (*json)["stationId"].asString();
 			data.startDate = (*json)["startDate"].isNull() ? "" : (*json)["startDate"].asString();
 			data.endDate = (*json)["endDate"].isNull() ? "" : (*json)["endDate"].asString();
