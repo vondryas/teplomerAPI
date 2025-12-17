@@ -23,10 +23,11 @@ ENV VCPKG_ROOT=/opt/vcpkg
 ENV PATH="$VCPKG_ROOT:$PATH"    
 
 ENV TZ=Europe/Prague
-RUN apt-get update && apt-get install -y tzdata \
- && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
- && echo $TZ > /etc/timezone
 
+RUN apt-get update && \
+    apt-get install -yq tzdata && \
+    ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata
 
 RUN git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT && \
     $VCPKG_ROOT/bootstrap-vcpkg.sh
