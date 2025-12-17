@@ -17,6 +17,7 @@
     "stduuid",
     "jwt-cpp",
     "botan",
+    "picojson",
     "boost-random"
   ]
 }

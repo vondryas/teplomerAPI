@@ -8,7 +8,7 @@ JWT JWT::generateToken(const std::map<std::string, ::jwt::traits::kazuho_picojso
 	// If remember is true, just add more 30 days, otherwise, just put valid only for 1 day.
 	const int64_t expiresAt = std::chrono::duration_cast<std::chrono::seconds>((time + std::chrono::hours{ (extension ? 30 : 1) * 24 }).time_since_epoch()).count();
 
-	auto jwtToken = ::jwt::create()
+	auto jwtToken = jwt::create<::jwt::traits::kazuho_picojson>()
 		.set_type("JWT")
 		.set_issuer(app().getCustomConfig()["jwt"]["issuer"].asString())
 		.set_audience(app().getCustomConfig()["jwt"]["audience"].asString())
@@ -50,7 +50,7 @@ std::map<std::string, std::any> JWT::decodeToken(const std::string& encodedToken
 
 bool JWT::verifyToken(const ::jwt::decoded_jwt<::jwt::traits::kazuho_picojson>& jwt) {
 	// Let's create a verifier
-	auto jwtVerifier = ::jwt::verify()
+	auto jwtVerifier = jwt::verify<::jwt::traits::kazuho_picojson>()
 		.with_issuer(app().getCustomConfig()["jwt"]["issuer"].asString())
 		.with_audience(app().getCustomConfig()["jwt"]["audience"].asString())
 		.allow_algorithm(::jwt::algorithm::hs256{ app().getCustomConfig()["jwt"]["private_key"].asString() });

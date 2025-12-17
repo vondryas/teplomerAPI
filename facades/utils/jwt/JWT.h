@@ -5,6 +5,7 @@
 #endif
 
 #include <jwt-cpp/jwt.h>
+#include "jwt-cpp/traits/kazuho-picojson/traits.h"
 #include <drogon/drogon.h>
 
 namespace facade {
@@ -25,15 +26,15 @@ namespace facade {
 			return this->expiration;
 		}
 
-		static JWT generateToken(const std::map<std::string, ::jwt::traits::kazuho_picojson::value_type>& claims = {}, const bool& extension = false);
+		static JWT generateToken(const std::map<std::string, jwt::traits::kazuho_picojson::value_type>& claims = {}, const bool& extension = false);
 		static std::map<std::string, std::any> decodeToken(const std::string& encodedToken);
 
 	private:
 		std::string token;
 		std::int64_t expiration;
 
-		static bool verifyToken(const ::jwt::decoded_jwt<::jwt::traits::kazuho_picojson>& jwt);
-		static void addClaimToAttributes(std::map<std::string, std::any>& attributes, const std::pair<std::string, jwt::basic_claim<::jwt::traits::kazuho_picojson>>& claim);
+		static bool verifyToken(const jwt::decoded_jwt<jwt::traits::kazuho_picojson>& jwt);
+		static void addClaimToAttributes(std::map<std::string, std::any>& attributes, const std::pair<std::string, jwt::basic_claim<jwt::traits::kazuho_picojson>>& claim);
 	};
 }
 

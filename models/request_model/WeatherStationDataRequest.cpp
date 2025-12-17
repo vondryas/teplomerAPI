@@ -54,8 +54,7 @@ void request_model::WeatherStationDataRequest::mapToOrmModel(model_interface::IM
 
 	if (!date.empty() && !time.empty())
 	{
-		trantor::Date measureAt;
-		measureAt = trantor::Date::fromDbStringLocal(date + " " + time);
-		sensorDataOrmModel.setMeasureAt(measureAt);
+		trantor::Date timestampUtc = trantor::Date::fromDbString(date + " " + time);
+		sensorDataOrmModel.setMeasureAt(timestampUtc);
 	}
 }
