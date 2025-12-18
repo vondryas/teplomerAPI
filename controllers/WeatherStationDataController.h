@@ -30,7 +30,7 @@ public:
 		// use METHOD_ADD to add your custom processing function here;
 		ADD_METHOD_TO(WeatherStationDataController::getById, "weather/{1}", Get);
 	ADD_METHOD_TO(WeatherStationDataController::get, "weather", Get);
-	ADD_METHOD_TO(WeatherStationDataController::getByFilter, "weather/filter", Get);
+	ADD_METHOD_TO(WeatherStationDataController::getByFilter, "weather/filter", Post);
 	ADD_METHOD_TO(WeatherStationDataController::updateOne, "weather", Put, OwnerFilter);
 	ADD_METHOD_TO(WeatherStationDataController::deleteOne, "weather/{1}", Delete, OwnerFilter);
 	ADD_METHOD_TO(WeatherStationDataController::create, "weather", Post, OwnerFilter);

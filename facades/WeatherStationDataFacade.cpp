@@ -97,7 +97,7 @@ Task<WeatherStationDataList> facade::WeatherStationDataFacade::getByFilter(const
 	}
 	auto sensorData = co_await mapper.findBy(criteria);
 	weatherStationDataList.setData(mvector<WeatherStationData>(sensorData));
-	weatherStationDataList.setTotalCount(co_await mapper.count());
+	weatherStationDataList.setTotalCount(co_await mapper.count(criteria));
 	weatherStationDataList.setLimit(limit);
 	weatherStationDataList.setPage(offset);
 	co_return weatherStationDataList;
