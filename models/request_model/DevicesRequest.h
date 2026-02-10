@@ -1,8 +1,8 @@
 #pragma once
 
 #include "IRequestModel.h"
-
 #include <optional>
+#include <enums/DeviceType.h>
 
 namespace drogon_model::defaultdb
 {
@@ -72,6 +72,11 @@ namespace request_model
 				result = false;
 				errorMessage += "type must be specified\n";
 			}
+			if (type.has_value() && (*type < 0 || *type >= (int)DeviceType::END_ENUM))
+			{
+				result = false;
+				errorMessage += "type must valid integer for type\n";
+			}
 			return { result, errorMessage };
 		}
 
@@ -83,6 +88,7 @@ namespace request_model
 				return { false, "Name identificator must be set for update operation" };
 			}
 			return { true, "" };
+			
 		}
 	};
 }

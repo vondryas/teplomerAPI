@@ -38,7 +38,6 @@ namespace facade
 	public:
 		WeatherStationDataFacade() = default;
 
-
 		Task<WeatherStationData> getById(const std::string& id) const; // Use drogon::Task
 		Task<WeatherStationDataList> getAll() const;
 		Task<WeatherStationDataList> getPaginated(const size_t page, const size_t limit) const;

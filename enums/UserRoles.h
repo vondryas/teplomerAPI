@@ -3,5 +3,6 @@
 enum class UserRoles : int32_t
 {
 	user = 0,
-	admin
+	admin,
+	END_ENUM
 };

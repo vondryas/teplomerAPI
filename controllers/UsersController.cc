@@ -7,16 +7,33 @@
 
 #include <string>
 #include "UsersController.h"
+#include <controllers/ownershipUtils/Ownership.h>
 
 Task<HttpResponsePtr> UsersController::signUp(const HttpRequestPtr req)
 {
 	HttpResponsePtr resp = nullptr;
+	UserRoles role = UserRoles::user;
+	try
+	{
+		role = getRoleFromRequest(req);
+	}
+	catch (const std::exception& ex)
+	{
+		LOG_DEBUG << "JWT role claim not found or invalid: " << ex.what() << ". Defaulting to 'user' role.";
+	}
 	UsersRequest userRequest = fromRequest<UsersRequest>(*req);
 	std::optional<auth_model::AuthModel> authModel;
 	if (userRequest.isEmpty())
 	{
 		LOG_ERROR << "Request data is empty";
 		co_return responses::wrongRequestResponse("Sign up data is required");
+	}
+	if (userRequest.role.has_value() && (int)userRequest.role.value() != (int)UserRoles::user)
+	{
+		if((int)role!= (int)UserRoles::admin)
+		{
+			co_return responses::forbiddenResponse("Only admin can create another admin role");
+		}
 	}
 	auto&& [res, error] = userRequest.validateForCreate();
 	if (!res)

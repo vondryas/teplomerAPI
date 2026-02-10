@@ -12,7 +12,6 @@ constexpr char asciitolower(char in) {
 }
 
 
-
 Task<auth_model::AuthModel> facade::UsersFacade::create(UsersRequest& user) const
 {
 	AuthModel authModel;
@@ -21,6 +20,10 @@ Task<auth_model::AuthModel> facade::UsersFacade::create(UsersRequest& user) cons
 	if (!user.role.has_value())
 	{
 		user.role = std::make_optional((int)UserRoles::user); // Default role if not provided
+	}
+	else if(user.role.value() < 0 || user.role.value() > 1)
+	{
+		throw std::runtime_error("Invalid role value: " + std::to_string(user.role.value()));
 	}
 	// Normalize email to lowercase
 	std::transform(user.email.begin(), user.email.end(), user.email.begin(), asciitolower);

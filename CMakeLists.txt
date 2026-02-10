@@ -57,7 +57,7 @@ else()
 endif()
 
 # Executable setup
-add_executable(${PROJECT_NAME} main.cc "models/list_model/UsersList.h"  "filters/Cors.h")
+add_executable(${PROJECT_NAME} main.cc "models/list_model/UsersList.h"  "filters/Cors.h" "facades/FireportDeviceDataFacade.h" "facades/FireportDeviceDataFacade.cpp" "models/filter_model/FireportDeviceFilter.h"  "controllers/ownershipUtils/Ownership.h")
 
 # Drogon configuration - supports both local and installed versions
 option(USE_LOCAL_DROGON "Use local Drogon subdirectory" OFF)
@@ -142,6 +142,7 @@ set(SOURCE_DIRS
     controllers
     controllers/exceptionWrapper
     controllers/responses
+    controllers/ownershipUtils
     filters
     plugins
     models/orm_model
@@ -153,6 +154,7 @@ set(SOURCE_DIRS
     models/filter_model
     models/auth_model
     facades
+    facade/mapper
     facades/utils/jwt
     facades/utils/passwdhash
     enums

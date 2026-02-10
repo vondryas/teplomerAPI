@@ -19,5 +19,11 @@
     "botan",
     "picojson",
     "boost-random"
+  ],
+  "overrides": [
+    {
+      "name": "botan",
+      "version": "3.7.1"
+    }
   ]
 }

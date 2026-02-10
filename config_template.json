@@ -409,7 +409,60 @@
           [ "device_id" ], // { "device_id": "rteplomer-1" }
           [ "end_device_ids", "device_id" ] // { "end_device_ids": { "device_id": "rteplomer-1" }, ... }
         ]
+      },
+
+      // ----- FIREPORT DEVICE DATA -----
+
+      // 1. DELETE /fireport/{id} (případně GET, pokud bys přepnul na OwnerFilter)
+      //    Cesta: fireport_device_data(id) -> devices(name) -> user_id
+      "fireport": {
+        "baseTable": "fireport_device_data",
+        "idColumn": "id",
+        "ownerColumn": "user_id",
+        "idInPath": true,
+        "joins": [
+          {
+            "table": "devices",
+            "localColumn": "device_id", // ve fireport_device_data
+            "foreignColumn": "name" // v devices
+          }
+        ]
+      },
+
+      // 2. PUT /fireport (Update)
+      //    Identifikace záznamu je v JSON body ("id").
+      //    Kontrola vlastnictví je stejná jako u DELETE (přes join na devices).
+      "fireport:PUT": {
+        "baseTable": "fireport_device_data",
+        "idColumn": "id",
+        "ownerColumn": "user_id",
+        "idInPath": false,
+        "bodyIdPaths": [
+          [ "id" ]
+        ],
+        "joins": [
+          {
+            "table": "devices",
+            "localColumn": "device_id",
+            "foreignColumn": "name"
+          }
+        ]
+      },
+
+      // 3. POST /fireport (Create)
+      //    Záznam ještě neexistuje, takže kontrolujeme, zda uživateli patří 
+      //    ZAŘÍZENÍ (device), ke kterému chce data přidat.
+      //    JSON body: { "deviceId": "název_zařízení", ... }
+      "fireport:POST": {
+        "baseTable": "devices",
+        "idColumn": "name", // Hledáme zařízení podle jména
+        "ownerColumn": "user_id",
+        "idInPath": false,
+        "bodyIdPaths": [
+          [ "deviceId" ] // Klíč v JSONu, který nese ID zařízení
+        ]
       }
+
     }
   }
 }

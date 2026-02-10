@@ -3,6 +3,7 @@
 
 #include "IRequestModel.h"
 #include <optional>
+#include <enums/UserRoles.h>
 
 namespace drogon_model::defaultdb
 {
@@ -85,10 +86,10 @@ namespace request_model
 				result = false;
 				errorMessage += "Password cannot be empty\n";
 			}
-			if (role.has_value() && (*role < 0 || *role > 1))
+			if (role.has_value() && ((*role < (int)UserRoles::user) || (*role >= (int)UserRoles::END_ENUM)))
 			{
 				result = false;
-				errorMessage += "Role must be between 0 and 2\n";
+				errorMessage += "Role must be valid integer identifying role\n";
 			}
 			return { result, errorMessage };
 		}
