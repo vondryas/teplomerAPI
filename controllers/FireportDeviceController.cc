@@ -10,6 +10,8 @@
 #include <controllers/ownershipUtils/Ownership.h>
 
 
+
+
 Task<HttpResponsePtr> FireportDeviceController::getOne(const HttpRequestPtr req, const std::string& id)
 {
 	HttpResponsePtr resp = nullptr;
@@ -34,56 +36,16 @@ Task<HttpResponsePtr> FireportDeviceController::getOne(const HttpRequestPtr req,
 
 		LOG_INFO << "User get by id fireport";
 		std::string ownerId = getUserIdFromRequest(req);
-		
+
 		auto data = co_await coroTryFacadeCall(facade_->getByIdOwner(id, ownerId), "getOneOwner", idclone, resp);
 		if (!data.has_value()) {
-			if(resp && resp->getStatusCode() == k404NotFound) {
+			if (resp && resp->getStatusCode() == k404NotFound) {
 				co_return responses::forbiddenResponse("Fireport device not found or you don't have access to it");
 			}
 			co_return resp;
 		}
 		co_return responses::jsonOkResponse(data->toJson());
 	}
-}
-
-Task<HttpResponsePtr> FireportDeviceController::getFilterOwner(const HttpRequestPtr req, const FireportDeviceFilter& filter)
-{
-	HttpResponsePtr resp = nullptr;
-	std::string ownerId = getUserIdFromRequest(req);
-	auto dataList = co_await coroTryFacadeCall(
-		facade_->getByFilterByOwner(filter, ownerId),
-		"getByFilterByOwner",
-		fmt::format("ownerId: {}, deviceId: {}, type: {}, deviceAddress: {}, orderBy: {}, limit: {}, offset: {}",
-			ownerId,
-			!filter.deviceId.empty() ? filter.deviceId : "null",
-			filter.type.has_value() ? std::to_string(filter.type.value()) : "null",
-			!filter.deviceAddress.empty() ? filter.deviceAddress : "null",
-			filter.orderBy, filter.limit, filter.offset),
-		resp
-	);
-	if (!dataList.has_value()) {
-		co_return resp;
-	}
-	co_return responses::jsonOkResponse(dataList->toJson());
-}
-
-Task<HttpResponsePtr> FireportDeviceController::getFilterAll(const HttpRequestPtr req, const FireportDeviceFilter& filter)
-{
-	HttpResponsePtr resp = nullptr;
-	auto dataList = co_await coroTryFacadeCall(
-		facade_->getByFilterAll(filter),
-		"getByFilterAll",
-		fmt::format("deviceId: {}, type: {}, deviceAddress: {}, orderBy: {}, limit: {}, offset: {}",
-			!filter.deviceId.empty() ? filter.deviceId : "null",
-			filter.type.has_value() ? std::to_string(filter.type.value()) : "null",
-			!filter.deviceAddress.empty() ? filter.deviceAddress : "null",
-			filter.orderBy, filter.limit, filter.offset),
-		resp
-	);
-	if (!dataList.has_value()) {
-		co_return resp;
-	}
-	co_return responses::jsonOkResponse(dataList->toJson());
 }
 
 Task<HttpResponsePtr> FireportDeviceController::getAllOwner(const HttpRequestPtr req)
@@ -180,10 +142,7 @@ Task<HttpResponsePtr> FireportDeviceController::create(const HttpRequestPtr req,
 	auto createdId = co_await coroTryFacadeCall(
 		facade_->create(model),
 		"create",
-		fmt::format("deviceId: {}, type: {}, deviceAddress: {}",
-			model.deviceId.empty() ? "null" : model.deviceId,
-			model.type.has_value() ? std::to_string(model.type.value()) : "null",
-			model.deviceAddress.empty() ? "null" : model.deviceAddress),
+		fmt::format("deviceId: {}", model.deviceId.empty() ? "null" : model.deviceId),
 		resp
 	);
 	if (!createdId.has_value()) {
@@ -192,17 +151,106 @@ Task<HttpResponsePtr> FireportDeviceController::create(const HttpRequestPtr req,
 	co_return responses::jsonOkResponse(createdId->toJson());
 }
 
-//Task<HttpResponsePtr> FireportDeviceController::notifyDeviceById(const HttpRequestPtr& req, const std::string& id)
-//{
-//	return Task<HttpResponsePtr>();
-//}
-//
-//Task<HttpResponsePtr> FireportDeviceController::notifyDeviceAllOwner(const HttpRequestPtr& req)
-//{
-//	return Task<HttpResponsePtr>();
-//}
-//
-//Task<HttpResponsePtr> FireportDeviceController::notifyDeviceAll(const HttpRequestPtr& req)
-//{
-//	return Task<HttpResponsePtr>();
-//}
+Task<HttpResponsePtr> FireportDeviceController::notifyDeviceByIdOwner(const HttpRequestPtr req, const std::string& id)
+{
+	HttpResponsePtr resp = nullptr;
+	if (id.empty())
+	{
+		LOG_ERROR << "Id parameter is empty";
+		co_return responses::wrongRequestResponse("Id parameter is required");
+	}
+	std::string ownerId = getUserIdFromRequest(req);
+	auto notifyResult = co_await coroTryFacadeCall(
+		facade_->NotifyDeviceByIdOwner(id),
+		"notifyDeviceByIdOwner",
+		fmt::format("id: {}, ownerId: {}", id, ownerId),
+		resp
+	);
+	if (!notifyResult.has_value()) {
+		co_return resp;
+	}
+	if (*notifyResult)
+	{
+		co_return responses::okResponse("Notification sent successfully");
+	}
+	else
+	{
+		co_return responses::internalServerErrorResponse("Failed to send notification");
+	}
+
+
+}
+
+Task<HttpResponsePtr> FireportDeviceController::notifyDeviceById(const HttpRequestPtr req, const std::string& id)
+{
+	HttpResponsePtr resp = nullptr;
+	if (id.empty())
+	{
+		LOG_ERROR << "Id parameter is empty";
+		co_return responses::wrongRequestResponse("Id parameter is required");
+	}
+	auto notifyResult = co_await coroTryFacadeCall(
+		facade_->NotifyDeviceById(id),
+		"notifyDeviceById",
+		fmt::format("id: {}", id),
+		resp
+	);
+	if (!notifyResult.has_value()) {
+		co_return resp;
+	}
+	if (*notifyResult)
+	{
+		co_return responses::okResponse("Notification sent successfully");
+	}
+	else
+	{
+		co_return responses::internalServerErrorResponse("Failed to send notification");
+	}
+
+}
+
+Task<HttpResponsePtr> FireportDeviceController::notifyDeviceAllOwner(const HttpRequestPtr req)
+{
+	HttpResponsePtr resp = nullptr;
+	std::string ownerId = getUserIdFromRequest(req);
+	auto notifyResult = co_await coroTryFacadeCall(
+		facade_->NotifyDeviceAllOwner(ownerId),
+		"notifyDeviceAllOwner",
+		fmt::format("ownerId: {}", ownerId),
+		resp
+	);
+	if (!notifyResult.has_value()) {
+		co_return resp;
+	}
+	if (*notifyResult)
+	{
+		co_return responses::okResponse("Notification sent successfully");
+	}
+	else
+	{
+		co_return responses::internalServerErrorResponse("Failed to send notification");
+	}
+
+}
+
+Task<HttpResponsePtr> FireportDeviceController::notifyDeviceAll(const HttpRequestPtr req)
+{
+	HttpResponsePtr resp = nullptr;
+	auto notifyResult = co_await coroTryFacadeCall(
+		facade_->NotifyAllDevices(),
+		"notifyDeviceAll",
+		"admin notify all",
+		resp
+	);
+	if (!notifyResult.has_value()) {
+		co_return resp;
+	}
+	if (*notifyResult)
+	{
+		co_return responses::okResponse("Notification sent successfully");
+	}
+	else
+	{
+		co_return responses::internalServerErrorResponse("Failed to send notification");
+	}
+}

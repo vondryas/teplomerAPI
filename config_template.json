@@ -333,6 +333,13 @@
       "issuer": "@ISSUER@",
       "audience": "teplomerapi"
     },
+    "emqx": {
+      "api_base": "@EMQX_API_BASE@",
+      "app_id": "@EMQX_DEPLOY_ID@",
+      "app_secret": "@EMQX_DEPLOY_SECRET@",
+      "import_batch_size": 20,
+      "publish_batch_size": 20
+    },
     "ownership": {
       // ----- USER -----
       // user/{id} (DELETE) – id je v URL

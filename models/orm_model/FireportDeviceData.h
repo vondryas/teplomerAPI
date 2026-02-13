@@ -48,8 +48,7 @@ class FireportDeviceData : public IFireportDeviceData
     {
         static const std::string _id;
         static const std::string _device_id;
-        static const std::string _type;
-        static const std::string _device_address;
+        static const std::string _password;
     };
 
     static const int primaryKeyNumber;
@@ -119,25 +118,17 @@ class FireportDeviceData : public IFireportDeviceData
     void setDeviceId(const std::string &pDeviceId) noexcept;
     void setDeviceId(std::string &&pDeviceId) noexcept;
 
-    /**  For column type  */
-    ///Get the value of the column type, returns the default value if the column is null
-    const int32_t &getValueOfType() const noexcept;
+    /**  For column password  */
+    ///Get the value of the column password, returns the default value if the column is null
+    const std::string &getValueOfPassword() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<int32_t> &getType() const noexcept;
-    ///Set the value of the column type
-    void setType(const int32_t &pType) noexcept;
-
-    /**  For column device_address  */
-    ///Get the value of the column device_address, returns the default value if the column is null
-    const std::string &getValueOfDeviceAddress() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getDeviceAddress() const noexcept;
-    ///Set the value of the column device_address
-    void setDeviceAddress(const std::string &pDeviceAddress) noexcept;
-    void setDeviceAddress(std::string &&pDeviceAddress) noexcept;
+    const std::shared_ptr<std::string> &getPassword() const noexcept;
+    ///Set the value of the column password
+    void setPassword(const std::string &pPassword) noexcept;
+    void setPassword(std::string &&pPassword) noexcept;
 
 
-    static size_t getColumnNumber() noexcept {  return 4;  }
+    static size_t getColumnNumber() noexcept {  return 3;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -164,8 +155,7 @@ class FireportDeviceData : public IFireportDeviceData
     void updateId(const uint64_t id);
     std::shared_ptr<std::string> id_;
     std::shared_ptr<std::string> deviceId_;
-    std::shared_ptr<int32_t> type_;
-    std::shared_ptr<std::string> deviceAddress_;
+    std::shared_ptr<std::string> password_;
     struct MetaData
     {
         const std::string colName_;
@@ -177,7 +167,7 @@ class FireportDeviceData : public IFireportDeviceData
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[4]={ false };
+    bool dirtyFlag_[3]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -208,12 +198,7 @@ class FireportDeviceData : public IFireportDeviceData
         }
         if(dirtyFlag_[2])
         {
-            sql += "type,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[3])
-        {
-            sql += "device_address,";
+            sql += "password,";
             ++parametersCount;
         }
         if(parametersCount > 0)
@@ -242,11 +227,6 @@ class FireportDeviceData : public IFireportDeviceData
             sql.append(placeholderStr, n);
         }
         if(dirtyFlag_[2])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        if(dirtyFlag_[3])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);

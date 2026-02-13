@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.10)
+﻿cmake_minimum_required(VERSION 3.11;;)
 
 # vcpkg toolchain integration
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -57,7 +57,7 @@ else()
 endif()
 
 # Executable setup
-add_executable(${PROJECT_NAME} main.cc "models/list_model/UsersList.h"  "filters/Cors.h" "facades/FireportDeviceDataFacade.h" "facades/FireportDeviceDataFacade.cpp" "models/filter_model/FireportDeviceFilter.h"  "controllers/ownershipUtils/Ownership.h")
+add_executable(${PROJECT_NAME} main.cc)
 
 # Drogon configuration - supports both local and installed versions
 option(USE_LOCAL_DROGON "Use local Drogon subdirectory" OFF)
@@ -124,6 +124,9 @@ check_required_env_var(DB_PASSWD)
 check_required_env_var(PORT)
 check_required_env_var(AUTH_KEY)
 check_required_env_var(DB_PORT)
+check_required_env_var(EMQX_DEPLOY_ID)
+check_required_env_var(EMQX_DEPLOY_SECRET)
+check_required_env_var(EMQX_API_BASE)
 check_var(ISSUER)
 
 # Make configuration file with database connection settings
@@ -154,9 +157,10 @@ set(SOURCE_DIRS
     models/filter_model
     models/auth_model
     facades
-    facade/mapper
+    facades/mapper
     facades/utils/jwt
     facades/utils/passwdhash
+    facades/EMQX_provisioning
     enums
 )
 

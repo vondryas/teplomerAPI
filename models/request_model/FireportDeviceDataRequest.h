@@ -1,6 +1,5 @@
 #pragma once
 #include "IRequestModel.h"
-#include <enums/FireportDeviceType.h>
 
 namespace drogon_model::defaultdb
 {
@@ -13,8 +12,7 @@ namespace request_model
 	{
 		using FireportDeviceData = drogon_model::defaultdb::FireportDeviceData;
 		std::string deviceId;
-		std::optional<int32_t> type;
-		std::string deviceAddress;
+		std::string password;
 		FireportDeviceDataRequest() = default;
 		void mapToOrmModel(model_interface::IModel& ormModel) const override;
 
@@ -31,7 +29,7 @@ namespace request_model
 
 		inline bool isEmpty() const
 		{
-			return !id.has_value() && deviceId.empty() && !type.has_value() && deviceAddress.empty();
+			return !id.has_value() && deviceId.empty() && password.empty();
 		}
 
 		Json::Value toJson() const override
@@ -41,10 +39,8 @@ namespace request_model
 				json["id"] = uuids::to_string(*id);
 			if (!deviceId.empty())
 				json["deviceId"] = deviceId;
-			if (type.has_value())
-				json["type"] = *type;
-			if (!deviceAddress.empty())
-				json["deviceAddress"] = deviceAddress;
+			if (!password.empty())
+				json["password"] = password;
 			return json;
 		}
 
@@ -63,17 +59,7 @@ namespace request_model
 				result = false;
 				errorMessage += "Device ID must be provided\n";
 			}
-			if (!type.has_value())
-			{
-				result = false;
-				errorMessage += "Type must be provided\n";
-			}
-			if (type.has_value() && (type.value() < 0 || type.value() >= (int)FireportDeviceType::END_ENUM))
-			{
-				result = false;
-				errorMessage += "Invalid type value\n";
-			}
-			if (deviceAddress.empty())
+			if (password.empty())
 			{
 				result = false;
 				errorMessage += "Device address must be provided\n";
@@ -91,15 +77,15 @@ namespace request_model
 				result = false;
 				errorMessage += "ID must be provided for update operation\n";
 			}
-			else if (!uuids::uuid::is_valid_uuid(uuids::to_string(*id)))
+			if (!deviceId.empty())
 			{
 				result = false;
-				errorMessage += "Invalid UUID format for ID\n";
+				errorMessage += "Device ID cannot be provided for update\n";
 			}
-			if (type.has_value() && (type.value() < 0 || type.value() >= (int)FireportDeviceType::END_ENUM))
+			if (password.empty())
 			{
 				result = false;
-				errorMessage += "Invalid type value\n";
+				errorMessage += "Device address must be provided\n";
 			}
 			return { result, errorMessage };
 		}
@@ -118,8 +104,7 @@ namespace drogon
 		if (json)
 		{
 			data.deviceId = (*json)["deviceId"].isNull() ? "" : (*json)["deviceId"].asString();
-			data.type = (*json)["type"].isNull() ? std::nullopt : std::make_optional((*json)["type"].asInt());
-			data.deviceAddress = (*json)["deviceAddress"].isNull() ? "" : (*json)["deviceAddress"].asString();
+			data.password = (*json)["password"].isNull() ? "" : (*json)["password"].asString();
 			data.id = (*json)["id"].isNull() ? std::nullopt : std::make_optional(uuids::uuid::from_string((*json)["id"].asString()).value());
 		}
 		return data;

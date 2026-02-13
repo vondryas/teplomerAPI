@@ -20,13 +20,11 @@ namespace drogon_model::defaultdb
 		virtual void setId(std::string&& pId) noexcept = 0;
 		virtual void setDeviceId(const std::string& deviceId) noexcept = 0;
 		virtual void setDeviceId(std::string&& pDeviceId) noexcept = 0;
-		virtual void setType(const int32_t& type) noexcept = 0;
-		virtual void setDeviceAddress(const std::string& deviceAddress) noexcept = 0;
-		virtual void setDeviceAddress(std::string&& pDeviceAddress) noexcept = 0;
+		virtual void setPassword(const std::string& pPassword) noexcept = 0;
+		virtual void setPassword(std::string&& pPassword) noexcept = 0;
 		virtual const std::shared_ptr<std::string>& getId() const noexcept = 0;
 		virtual const std::shared_ptr<std::string>& getDeviceId() const noexcept = 0;
-		virtual const std::shared_ptr<int32_t>& getType() const noexcept = 0;
-		virtual const std::shared_ptr<std::string>& getDeviceAddress() const noexcept = 0;
+		virtual const std::shared_ptr<std::string>& getPassword() const noexcept = 0;
 
 
 		void mapToOrmModel(model_interface::IModel& model) const override
@@ -42,8 +40,7 @@ namespace drogon_model::defaultdb
 			auto& fireportDataRequestModel = dynamic_cast<request_model::FireportDeviceDataRequest&>(model);
 			fireportDataRequestModel.id = getId() ? uuids::uuid().from_string(*getId()) : std::nullopt;
 			fireportDataRequestModel.deviceId = getDeviceId() ? *getDeviceId() : std::string();
-			fireportDataRequestModel.type = getType() ? std::make_optional(*getType()) : std::nullopt;
-			fireportDataRequestModel.deviceAddress = getDeviceAddress() ? *getDeviceAddress() : std::string();
+			fireportDataRequestModel.password = getPassword() ? *getPassword() : std::string();
 		}
 	};
 

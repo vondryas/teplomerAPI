@@ -16,8 +16,7 @@ using namespace drogon_model::defaultdb;
 
 const std::string FireportDeviceData::Cols::_id = "\"id\"";
 const std::string FireportDeviceData::Cols::_device_id = "\"device_id\"";
-const std::string FireportDeviceData::Cols::_type = "\"type\"";
-const std::string FireportDeviceData::Cols::_device_address = "\"device_address\"";
+const std::string FireportDeviceData::Cols::_password = "\"password\"";
 const std::string FireportDeviceData::primaryKeyName = "id";
 const bool FireportDeviceData::hasPrimaryKey = true;
 const std::string FireportDeviceData::tableName = "\"fireport_device_data\"";
@@ -25,8 +24,7 @@ const std::string FireportDeviceData::tableName = "\"fireport_device_data\"";
 const std::vector<typename FireportDeviceData::MetaData> FireportDeviceData::metaData_={
 {"id","std::string","uuid",0,0,1,1},
 {"device_id","std::string","text",0,0,0,1},
-{"type","int32_t","integer",4,0,0,1},
-{"device_address","std::string","text",0,0,0,1}
+{"password","std::string","text",0,0,0,1}
 };
 const std::string &FireportDeviceData::getColumnName(size_t index) noexcept(false)
 {
@@ -45,19 +43,15 @@ FireportDeviceData::FireportDeviceData(const Row &r, const ssize_t indexOffset) 
         {
             deviceId_=std::make_shared<std::string>(r["device_id"].as<std::string>());
         }
-        if(!r["type"].isNull())
+        if(!r["password"].isNull())
         {
-            type_=std::make_shared<int32_t>(r["type"].as<int32_t>());
-        }
-        if(!r["device_address"].isNull())
-        {
-            deviceAddress_=std::make_shared<std::string>(r["device_address"].as<std::string>());
+            password_=std::make_shared<std::string>(r["password"].as<std::string>());
         }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 4 > r.size())
+        if(offset + 3 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -76,12 +70,7 @@ FireportDeviceData::FireportDeviceData(const Row &r, const ssize_t indexOffset) 
         index = offset + 2;
         if(!r[index].isNull())
         {
-            type_=std::make_shared<int32_t>(r[index].as<int32_t>());
-        }
-        index = offset + 3;
-        if(!r[index].isNull())
-        {
-            deviceAddress_=std::make_shared<std::string>(r[index].as<std::string>());
+            password_=std::make_shared<std::string>(r[index].as<std::string>());
         }
     }
 
@@ -89,7 +78,7 @@ FireportDeviceData::FireportDeviceData(const Row &r, const ssize_t indexOffset) 
 
 FireportDeviceData::FireportDeviceData(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 3)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -115,15 +104,7 @@ FireportDeviceData::FireportDeviceData(const Json::Value &pJson, const std::vect
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            type_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
-        }
-    }
-    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
-    {
-        dirtyFlag_[3] = true;
-        if(!pJson[pMasqueradingVector[3]].isNull())
-        {
-            deviceAddress_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+            password_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
 }
@@ -146,20 +127,12 @@ FireportDeviceData::FireportDeviceData(const Json::Value &pJson) noexcept(false)
             deviceId_=std::make_shared<std::string>(pJson["device_id"].asString());
         }
     }
-    if(pJson.isMember("type"))
+    if(pJson.isMember("password"))
     {
         dirtyFlag_[2]=true;
-        if(!pJson["type"].isNull())
+        if(!pJson["password"].isNull())
         {
-            type_=std::make_shared<int32_t>((int32_t)pJson["type"].asInt64());
-        }
-    }
-    if(pJson.isMember("device_address"))
-    {
-        dirtyFlag_[3]=true;
-        if(!pJson["device_address"].isNull())
-        {
-            deviceAddress_=std::make_shared<std::string>(pJson["device_address"].asString());
+            password_=std::make_shared<std::string>(pJson["password"].asString());
         }
     }
 }
@@ -167,7 +140,7 @@ FireportDeviceData::FireportDeviceData(const Json::Value &pJson) noexcept(false)
 void FireportDeviceData::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 3)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -192,15 +165,7 @@ void FireportDeviceData::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            type_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
-        }
-    }
-    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
-    {
-        dirtyFlag_[3] = true;
-        if(!pJson[pMasqueradingVector[3]].isNull())
-        {
-            deviceAddress_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+            password_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
 }
@@ -222,20 +187,12 @@ void FireportDeviceData::updateByJson(const Json::Value &pJson) noexcept(false)
             deviceId_=std::make_shared<std::string>(pJson["device_id"].asString());
         }
     }
-    if(pJson.isMember("type"))
+    if(pJson.isMember("password"))
     {
         dirtyFlag_[2] = true;
-        if(!pJson["type"].isNull())
+        if(!pJson["password"].isNull())
         {
-            type_=std::make_shared<int32_t>((int32_t)pJson["type"].asInt64());
-        }
-    }
-    if(pJson.isMember("device_address"))
-    {
-        dirtyFlag_[3] = true;
-        if(!pJson["device_address"].isNull())
-        {
-            deviceAddress_=std::make_shared<std::string>(pJson["device_address"].asString());
+            password_=std::make_shared<std::string>(pJson["password"].asString());
         }
     }
 }
@@ -289,43 +246,26 @@ void FireportDeviceData::setDeviceId(std::string &&pDeviceId) noexcept
     dirtyFlag_[1] = true;
 }
 
-const int32_t &FireportDeviceData::getValueOfType() const noexcept
-{
-    static const int32_t defaultValue = int32_t();
-    if(type_)
-        return *type_;
-    return defaultValue;
-}
-const std::shared_ptr<int32_t> &FireportDeviceData::getType() const noexcept
-{
-    return type_;
-}
-void FireportDeviceData::setType(const int32_t &pType) noexcept
-{
-    type_ = std::make_shared<int32_t>(pType);
-    dirtyFlag_[2] = true;
-}
-
-const std::string &FireportDeviceData::getValueOfDeviceAddress() const noexcept
+const std::string &FireportDeviceData::getValueOfPassword() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(deviceAddress_)
-        return *deviceAddress_;
+    if(password_)
+        return *password_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &FireportDeviceData::getDeviceAddress() const noexcept
+const std::shared_ptr<std::string> &FireportDeviceData::getPassword() const noexcept
 {
-    return deviceAddress_;
+    return password_;
 }
-void FireportDeviceData::setDeviceAddress(const std::string &pDeviceAddress) noexcept
+void FireportDeviceData::setPassword(const std::string &pPassword) noexcept
 {
-    deviceAddress_ = std::make_shared<std::string>(pDeviceAddress);
-    dirtyFlag_[3] = true;
+    password_ = std::make_shared<std::string>(pPassword);
+    dirtyFlag_[2] = true;
 }
-void FireportDeviceData::setDeviceAddress(std::string &&pDeviceAddress) noexcept
+void FireportDeviceData::setPassword(std::string &&pPassword) noexcept
 {
-    deviceAddress_ = std::make_shared<std::string>(std::move(pDeviceAddress));
-    dirtyFlag_[3] = true;
+    password_ = std::make_shared<std::string>(std::move(pPassword));
+    dirtyFlag_[2] = true;
 }
 
 void FireportDeviceData::updateId(const uint64_t id)
@@ -337,8 +277,7 @@ const std::vector<std::string> &FireportDeviceData::insertColumns() noexcept
     static const std::vector<std::string> inCols={
         "id",
         "device_id",
-        "type",
-        "device_address"
+        "password"
     };
     return inCols;
 }
@@ -369,20 +308,9 @@ void FireportDeviceData::outputArgs(drogon::orm::internal::SqlBinder &binder) co
     }
     if(dirtyFlag_[2])
     {
-        if(getType())
+        if(getPassword())
         {
-            binder << getValueOfType();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[3])
-    {
-        if(getDeviceAddress())
-        {
-            binder << getValueOfDeviceAddress();
+            binder << getValueOfPassword();
         }
         else
         {
@@ -405,10 +333,6 @@ const std::vector<std::string> FireportDeviceData::updateColumns() const
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
-    }
-    if(dirtyFlag_[3])
-    {
-        ret.push_back(getColumnName(3));
     }
     return ret;
 }
@@ -439,20 +363,9 @@ void FireportDeviceData::updateArgs(drogon::orm::internal::SqlBinder &binder) co
     }
     if(dirtyFlag_[2])
     {
-        if(getType())
+        if(getPassword())
         {
-            binder << getValueOfType();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[3])
-    {
-        if(getDeviceAddress())
-        {
-            binder << getValueOfDeviceAddress();
+            binder << getValueOfPassword();
         }
         else
         {
@@ -479,21 +392,13 @@ Json::Value FireportDeviceData::toJson() const
     {
         ret["device_id"]=Json::Value();
     }
-    if(getType())
+    if(getPassword())
     {
-        ret["type"]=getValueOfType();
+        ret["password"]=getValueOfPassword();
     }
     else
     {
-        ret["type"]=Json::Value();
-    }
-    if(getDeviceAddress())
-    {
-        ret["device_address"]=getValueOfDeviceAddress();
-    }
-    else
-    {
-        ret["device_address"]=Json::Value();
+        ret["password"]=Json::Value();
     }
     return ret;
 }
@@ -502,7 +407,7 @@ Json::Value FireportDeviceData::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 4)
+    if(pMasqueradingVector.size() == 3)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -528,24 +433,13 @@ Json::Value FireportDeviceData::toMasqueradedJson(
         }
         if(!pMasqueradingVector[2].empty())
         {
-            if(getType())
+            if(getPassword())
             {
-                ret[pMasqueradingVector[2]]=getValueOfType();
+                ret[pMasqueradingVector[2]]=getValueOfPassword();
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
-            }
-        }
-        if(!pMasqueradingVector[3].empty())
-        {
-            if(getDeviceAddress())
-            {
-                ret[pMasqueradingVector[3]]=getValueOfDeviceAddress();
-            }
-            else
-            {
-                ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
         return ret;
@@ -567,21 +461,13 @@ Json::Value FireportDeviceData::toMasqueradedJson(
     {
         ret["device_id"]=Json::Value();
     }
-    if(getType())
+    if(getPassword())
     {
-        ret["type"]=getValueOfType();
+        ret["password"]=getValueOfPassword();
     }
     else
     {
-        ret["type"]=Json::Value();
-    }
-    if(getDeviceAddress())
-    {
-        ret["device_address"]=getValueOfDeviceAddress();
-    }
-    else
-    {
-        ret["device_address"]=Json::Value();
+        ret["password"]=Json::Value();
     }
     return ret;
 }
@@ -603,24 +489,14 @@ bool FireportDeviceData::validateJsonForCreation(const Json::Value &pJson, std::
         err="The device_id column cannot be null";
         return false;
     }
-    if(pJson.isMember("type"))
+    if(pJson.isMember("password"))
     {
-        if(!validJsonOfField(2, "type", pJson["type"], err, true))
+        if(!validJsonOfField(2, "password", pJson["password"], err, true))
             return false;
     }
     else
     {
-        err="The type column cannot be null";
-        return false;
-    }
-    if(pJson.isMember("device_address"))
-    {
-        if(!validJsonOfField(3, "device_address", pJson["device_address"], err, true))
-            return false;
-    }
-    else
-    {
-        err="The device_address column cannot be null";
+        err="The password column cannot be null";
         return false;
     }
     return true;
@@ -629,7 +505,7 @@ bool FireportDeviceData::validateMasqueradedJsonForCreation(const Json::Value &p
                                                             const std::vector<std::string> &pMasqueradingVector,
                                                             std::string &err)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 3)
     {
         err = "Bad masquerading vector";
         return false;
@@ -669,19 +545,6 @@ bool FireportDeviceData::validateMasqueradedJsonForCreation(const Json::Value &p
             return false;
         }
       }
-      if(!pMasqueradingVector[3].empty())
-      {
-          if(pJson.isMember(pMasqueradingVector[3]))
-          {
-              if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
-                  return false;
-          }
-        else
-        {
-            err="The " + pMasqueradingVector[3] + " column cannot be null";
-            return false;
-        }
-      }
     }
     catch(const Json::LogicError &e)
     {
@@ -707,14 +570,9 @@ bool FireportDeviceData::validateJsonForUpdate(const Json::Value &pJson, std::st
         if(!validJsonOfField(1, "device_id", pJson["device_id"], err, false))
             return false;
     }
-    if(pJson.isMember("type"))
+    if(pJson.isMember("password"))
     {
-        if(!validJsonOfField(2, "type", pJson["type"], err, false))
-            return false;
-    }
-    if(pJson.isMember("device_address"))
-    {
-        if(!validJsonOfField(3, "device_address", pJson["device_address"], err, false))
+        if(!validJsonOfField(2, "password", pJson["password"], err, false))
             return false;
     }
     return true;
@@ -723,7 +581,7 @@ bool FireportDeviceData::validateMasqueradedJsonForUpdate(const Json::Value &pJs
                                                           const std::vector<std::string> &pMasqueradingVector,
                                                           std::string &err)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 3)
     {
         err = "Bad masquerading vector";
         return false;
@@ -747,11 +605,6 @@ bool FireportDeviceData::validateMasqueradedJsonForUpdate(const Json::Value &pJs
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
-              return false;
-      }
-      if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
-      {
-          if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
     }
@@ -795,18 +648,6 @@ bool FireportDeviceData::validJsonOfField(size_t index,
             }
             break;
         case 2:
-            if(pJson.isNull())
-            {
-                err="The " + fieldName + " column cannot be null";
-                return false;
-            }
-            if(!pJson.isInt())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            break;
-        case 3:
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";

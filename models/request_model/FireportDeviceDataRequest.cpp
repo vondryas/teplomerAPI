@@ -9,8 +9,6 @@ void request_model::FireportDeviceDataRequest::mapToOrmModel(model_interface::IM
 		sensorDataOrmModel.setId(uuids::to_string(*id));
 	if (!deviceId.empty())
 		sensorDataOrmModel.setDeviceId(deviceId);
-	if (type.has_value())
-		sensorDataOrmModel.setType(*type);
-	if (!deviceAddress.empty())
-		sensorDataOrmModel.setDeviceAddress(deviceAddress);
+	if (!password.empty())
+		sensorDataOrmModel.setPassword(password);
 }

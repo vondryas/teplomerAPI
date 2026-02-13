@@ -1,5 +1,23 @@
 #include "Response.h"
 
+HttpResponsePtr responses::okResponse(const std::string& body, const drogon::HttpStatusCode statusCode)
+{
+	auto resp = drogon::HttpResponse::newHttpResponse();
+	resp->setStatusCode(statusCode);
+	resp->setContentTypeCode(drogon::CT_TEXT_PLAIN);
+	resp->setBody(body);
+	return resp;
+}
+
+HttpResponsePtr responses::booleanOkResponse(const bool value, const drogon::HttpStatusCode statusCode)
+{
+	auto resp = drogon::HttpResponse::newHttpResponse();
+	resp->setStatusCode(statusCode);
+	resp->setContentTypeCode(drogon::CT_TEXT_PLAIN);
+	resp->setBody(value ? "true" : "false");
+	return resp;
+}
+
 HttpResponsePtr responses::wrongRequestResponse(const std::string& reason, const drogon::HttpStatusCode statusCode)
 {
 	auto resp = drogon::HttpResponse::newHttpResponse();

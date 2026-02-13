@@ -7,6 +7,12 @@ using namespace drogon;
 
 namespace responses
 {
+	HttpResponsePtr okResponse(const std::string& message = "OK",
+		const drogon::HttpStatusCode statusCode = drogon::k200OK);
+
+	HttpResponsePtr booleanOkResponse(const bool value,
+		const drogon::HttpStatusCode statusCode = drogon::k200OK);
+
 	HttpResponsePtr wrongRequestResponse(const std::string& reason,
 		const drogon::HttpStatusCode statusCode = drogon::k400BadRequest);
 

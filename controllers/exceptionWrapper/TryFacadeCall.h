@@ -38,7 +38,7 @@ coroTryFacadeCall(
 	using T = typename AwaitableResult<std::decay_t<Awaitable>>::type;
 
 	static_assert((std::is_base_of_v<model_interface::IModel, T>
-		|| std::is_same_v<T, std::size_t>),
+		|| std::is_same_v<T, std::size_t> || std::is_same_v<T, bool>),
 		"T must derive from IModel or type must be size_t");
 	try {
 		T result = co_await std::forward<Awaitable>(awaitable);

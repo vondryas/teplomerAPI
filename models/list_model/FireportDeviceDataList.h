@@ -16,6 +16,8 @@ namespace list_model
 		explicit FireportDeviceDataList(const mvector<FireportDeviceData>& data)
 			: data_(data) {
 		}
+
+		const mvector<FireportDeviceData>& getData() const noexcept { return data_; }
 		void setTotalCount(size_t count) { totalCount_ = count; }
 		void setData(const mvector<FireportDeviceData>& data) { data_ = data; }
 		void setLimit(size_t limit) { limit_ = limit; }
