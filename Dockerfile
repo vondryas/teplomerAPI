@@ -9,6 +9,11 @@ ARG ISSUER
 ARG AUTH_KEY
 ARG DB_PORT
 ARG PORT
+ARG EMQX_DEPLOY_ID
+ARG EMQX_DEPLOY_SECRET
+ARG EMQX_API_BASE
+
+
 
 RUN apt-get update && apt-get install -y \
     build-essential cmake git wget curl \
