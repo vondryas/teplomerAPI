@@ -290,8 +290,8 @@
         "tags": [
           "Fireport"
         ],
-        "summary": "Get fireport device by ID",
-        "operationId": "getFireportById",
+        "summary": "Get Fireport device by ID",
+        "operationId": "getFireportDeviceById",
         "parameters": [
           {
             "name": "id",
@@ -305,7 +305,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Fireport device detail",
+            "description": "Device detail",
             "content": {
               "application/json": {
                 "schema": {
@@ -324,18 +324,8 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "404": {
-            "description": "Not found",
+            "description": "Device not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -353,6 +343,16 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -362,14 +362,15 @@
           {
             "cookieAuth": []
           }
-        ]
+        ],
+        "description": "Returns a single Fireport device credential record by its UUID. Access is ownership-based."
       },
       "delete": {
         "tags": [
           "Fireport"
         ],
-        "summary": "Delete fireport device by ID",
-        "operationId": "deleteFireport",
+        "summary": "Delete Fireport device by ID",
+        "operationId": "deleteFireportDevice",
         "parameters": [
           {
             "name": "id",
@@ -403,6 +404,26 @@
               }
             }
           },
+          "404": {
+            "description": "Device not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized",
             "content": {
@@ -422,26 +443,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
           }
         },
         "security": [
@@ -451,7 +452,8 @@
           {
             "cookieAuth": []
           }
-        ]
+        ],
+        "description": "Deletes a Fireport device credential record by UUID. Requires ownership."
       }
     },
     "/fireport/all": {
@@ -459,11 +461,11 @@
         "tags": [
           "Fireport"
         ],
-        "summary": "List all fireport devices (admin)",
-        "operationId": "getFireportAll",
+        "summary": "List all Fireport devices",
+        "operationId": "listAllFireportDevicesAdmin",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "List of devices",
             "content": {
               "application/json": {
                 "schema": {
@@ -482,8 +484,8 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -492,8 +494,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "text/plain": {
                 "schema": {
@@ -520,7 +522,8 @@
           {
             "cookieAuth": []
           }
-        ]
+        ],
+        "description": "Admin-only: returns all Fireport device credential records."
       }
     },
     "/fireport": {
@@ -528,11 +531,11 @@
         "tags": [
           "Fireport"
         ],
-        "summary": "List fireport devices owned by current user",
-        "operationId": "getFireportOwner",
+        "summary": "List my Fireport devices",
+        "operationId": "listFireportDevices",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "List of devices",
             "content": {
               "application/json": {
                 "schema": {
@@ -551,8 +554,8 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -561,8 +564,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "text/plain": {
                 "schema": {
@@ -579,22 +582,15 @@
           {
             "cookieAuth": []
           }
-        ]
+        ],
+        "description": "Returns Fireport device credentials that the authenticated user can access (ownership-based)."
       },
       "post": {
         "tags": [
           "Fireport"
         ],
-        "summary": "Create fireport device",
-        "operationId": "createFireport",
-        "security": [
-          {
-            "bearerAuth": []
-          },
-          {
-            "cookieAuth": []
-          }
-        ],
+        "summary": "Create Fireport device credentials",
+        "operationId": "createFireportDevice",
         "requestBody": {
           "required": true,
           "content": {
@@ -607,7 +603,7 @@
         },
         "responses": {
           "200": {
-            "description": "Created fireport device",
+            "description": "Created device",
             "content": {
               "application/json": {
                 "schema": {
@@ -618,26 +614,6 @@
           },
           "400": {
             "description": "Invalid request or validation failed",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -665,15 +641,28 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
-        }
-      },
-      "put": {
-        "tags": [
-          "Fireport"
-        ],
-        "summary": "Update fireport device",
-        "operationId": "updateFireport",
+        },
         "security": [
           {
             "bearerAuth": []
@@ -682,6 +671,14 @@
             "cookieAuth": []
           }
         ],
+        "description": "Creates new Fireport device credentials (device_id + password) and assigns ownership to the authenticated user."
+      },
+      "put": {
+        "tags": [
+          "Fireport"
+        ],
+        "summary": "Update Fireport device credentials",
+        "operationId": "updateFireportDevice",
         "requestBody": {
           "required": true,
           "content": {
@@ -694,18 +691,37 @@
         },
         "responses": {
           "200": {
-            "description": "Number of updated rows as plain text",
+            "description": "Created device",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string",
-                  "example": "1"
+                  "$ref": "#/components/schemas/FireportDeviceData"
                 }
               }
             }
           },
           "400": {
             "description": "Invalid request or validation failed",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Related resource not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "text/plain": {
                 "schema": {
@@ -733,9 +749,49 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "description": "Updates Fireport device credentials (id + device_id + password). Requires ownership of the Fireport record."
+      }
+    },
+    "/fireport/notify/admin/{id}": {
+      "post": {
+        "tags": [
+          "Fireport"
+        ],
+        "summary": "Notify Fireport device by ID (admin)",
+        "operationId": "notifyFireportDeviceAdminById",
+        "responses": {
+          "200": {
+            "description": "Created device",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or validation failed",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not found",
+            "description": "Related resource not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -753,8 +809,299 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "description": "Admin-only: triggers a notification/refresh action for a specific Fireport device by UUID."
+      }
+    },
+    "/fireport/notify/{id}": {
+      "post": {
+        "tags": [
+          "Fireport"
+        ],
+        "summary": "Notify Fireport device by ID",
+        "operationId": "notifyFireportDeviceById",
+        "responses": {
+          "200": {
+            "description": "Notified device",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or validation failed",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Related resource not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "description": "Triggers a notification/refresh action for a specific Fireport device (ownership-based)."
+      }
+    },
+    "/fireport/notify": {
+      "post": {
+        "tags": [
+          "Fireport"
+        ],
+        "summary": "Notify my Fireport devices",
+        "operationId": "notifyFireportDevices",
+        "responses": {
+          "200": {
+            "description": "Notified devices",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or validation failed",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Related resource not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "description": "Triggers a notification/refresh action for Fireport devices accessible to the authenticated user. Payload depends on backend implementation."
+      }
+    },
+    "/fireport/notify/all": {
+      "post": {
+        "tags": [
+          "Fireport"
+        ],
+        "summary": "Notify all Fireport devices",
+        "operationId": "notifyAllFireportDevicesAdmin",
+        "responses": {
+          "200": {
+            "description": "notified",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or validation failed",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Related resource not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ],
+        "description": "Admin-only: triggers a notification/refresh action for all Fireport devices."
       }
     },
     "/heater/{id}": {
@@ -762,7 +1109,7 @@
         "tags": [
           "Heater"
         ],
-        "summary": "Get heater by ID",
+        "summary": "Get device by ID",
         "operationId": "getHeaterById",
         "parameters": [
           {
@@ -777,17 +1124,27 @@
         ],
         "responses": {
           "200": {
-            "description": "Heater status",
+            "description": "Succes",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/HeaterStatusResponse"
+                  "type": "string"
                 }
               }
             }
           },
           "400": {
             "description": "Invalid ID",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Device not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -814,37 +1171,61 @@
         "tags": [
           "Heater"
         ],
-        "summary": "Get heater status",
-        "operationId": "heaterStatus",
+        "summary": "Create device",
+        "operationId": "createHeaterStatus",
         "requestBody": {
-          "required": false,
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": true
+                "$ref": "#/components/schemas/DeviceCreateRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Heater status",
+            "description": "Created device",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/HeaterStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or validation failed",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Related resource not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
           },
           "500": {
             "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "text/plain": {
                 "schema": {
@@ -875,7 +1256,8 @@
               }
             }
           }
-        }
+        },
+        "operationId": "health"
       }
     },
     "/openapi.json": {
@@ -907,7 +1289,8 @@
               }
             }
           }
-        }
+        },
+        "operationId": "getOpenApiJson"
       }
     },
     "/openapi": {
@@ -939,7 +1322,159 @@
               }
             }
           }
+        },
+        "operationId": "getOpenApi"
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get user by ID",
+        "operationId": "getUserById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
         }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete user by ID",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Number of deleted rows as plain text",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "1"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "cookieAuth": []
+          }
+        ]
       }
     },
     "/user": {
@@ -962,134 +1497,6 @@
           },
           "400": {
             "description": "Invalid request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/auth": {
-      "post": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Register new user",
-        "operationId": "signUp",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserCreateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User created and logged in",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthModel"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request or validation failed",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Related resource not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "User login",
-        "operationId": "signIn",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserLoginRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User logged in",
-            "headers": {
-              "Set-Cookie": {
-                "description": "Session cookie containing the session ID (server-side JWT stored in session).",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthModel"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request or validation failed",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1529,195 +1936,36 @@
         }
       }
     },
-    "/user/{id}": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Get user by ID",
-        "operationId": "getUserById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User detail",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Delete user by ID",
-        "operationId": "deleteUser",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Number of deleted rows as plain text",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string",
-                  "example": "1"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          },
-          {
-            "cookieAuth": []
-          }
-        ]
-      }
-    },
-    "/fireport/filter": {
+    "/auth/signup": {
       "post": {
         "tags": [
-          "Fireport"
+          "Users"
         ],
-        "summary": "Filter fireport devices owned by current user",
-        "operationId": "filterFireportOwner",
-        "security": [
-          {
-            "bearerAuth": []
-          },
-          {
-            "cookieAuth": []
-          }
-        ],
+        "summary": "Register new user",
+        "operationId": "signUp",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/FireportDeviceFilter"
+                "$ref": "#/components/schemas/UserCreateRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "User created and logged in",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FireportPaged"
+                  "$ref": "#/components/schemas/AuthModel"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid request",
+            "description": "Invalid request or validation failed",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1726,8 +1974,8 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
+          "404": {
+            "description": "Related resource not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1749,44 +1997,44 @@
         }
       }
     },
-    "/fireport/filter/all": {
+    "/auth/signin": {
       "post": {
         "tags": [
-          "Fireport"
+          "Users"
         ],
-        "summary": "Filter all fireport devices (admin)",
-        "operationId": "filterFireportAll",
-        "security": [
-          {
-            "bearerAuth": []
-          },
-          {
-            "cookieAuth": []
-          }
-        ],
+        "summary": "User login",
+        "operationId": "signIn",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/FireportDeviceFilter"
+                "$ref": "#/components/schemas/UserLoginRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "User logged in",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Session cookie containing the session ID (server-side JWT stored in session).",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FireportPaged"
+                  "$ref": "#/components/schemas/AuthModel"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid request",
+            "description": "Invalid request or validation failed",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1795,8 +2043,8 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
+          "404": {
+            "description": "User not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1807,16 +2055,6 @@
           },
           "500": {
             "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2206,32 +2444,6 @@
           }
         }
       },
-      "DeviceTypeEnum": {
-        "type": "integer",
-        "format": "int32",
-        "enum": [
-          0,
-          1,
-          2
-        ],
-        "x-enum-varnames": [
-          "weatherStation",
-          "heater",
-          "firePortActivated"
-        ]
-      },
-      "UserRolesEnum": {
-        "type": "integer",
-        "format": "int32",
-        "enum": [
-          0,
-          1
-        ],
-        "x-enum-varnames": [
-          "user",
-          "admin"
-        ]
-      },
       "FireportDeviceData": {
         "type": "object",
         "properties": {
@@ -2251,93 +2463,6 @@
           "device_id",
           "password"
         ]
-      },
-      "FireportPaged": {
-        "type": "object",
-        "properties": {
-          "Data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FireportDeviceData"
-            }
-          },
-          "TotalICount": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "ICount": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "PerPage": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "Page": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
-      "FireportCreateRequest": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "deviceId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "password": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "deviceId",
-          "password"
-        ]
-      },
-      "FireportUpdateRequest": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "password": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "password"
-        ]
-      },
-      "IdResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "required": [
-          "id"
-        ]
-      },
-      "HeaterStatusResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "status": {
-            "type": "string"
-          }
-        }
       },
       "FireportDeviceDataCreateRequest": {
         "type": "object",
@@ -2370,35 +2495,46 @@
         },
         "required": [
           "id",
-          "device_id",
           "password"
         ]
       },
-      "FireportDeviceFilter": {
+      "FireportPaged": {
         "type": "object",
         "properties": {
-          "deviceId": {
-            "type": "string"
+          "Data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FireportDeviceData"
+            }
           },
-          "limit": {
+          "TotalICount": {
             "type": "integer",
-            "format": "int32",
-            "default": 20
+            "format": "int64"
           },
-          "offset": {
+          "ICount": {
             "type": "integer",
-            "format": "int32",
-            "default": 1
+            "format": "int64"
           },
-          "orderBy": {
-            "type": "string",
-            "default": "id"
+          "PerPage": {
+            "type": "integer",
+            "format": "int64"
           },
-          "orderDirection": {
-            "type": "string",
-            "default": "DESC"
+          "Page": {
+            "type": "integer",
+            "format": "int64"
           }
         }
+      },
+      "HeaterStatusResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ]
       }
     }
   },
@@ -2421,7 +2557,7 @@
     },
     {
       "name": "Fireport",
-      "description": "Fireport device data"
+      "description": "Fireport device management"
     },
     {
       "name": "Heater",

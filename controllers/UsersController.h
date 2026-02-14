@@ -36,8 +36,8 @@ public:
 		// use METHOD_ADD to add your custom processing function here;
 		ADD_METHOD_TO(UsersController::getOne, "user/{1}", Get, Options);
 	ADD_METHOD_TO(UsersController::get, "user", Get, Options);
-	ADD_METHOD_TO(UsersController::signUp, "auth", Post, Options);
-	ADD_METHOD_TO(UsersController::signIn, "auth", Get, Options);
+	ADD_METHOD_TO(UsersController::signUp, "auth/signup", Post, Options);
+	ADD_METHOD_TO(UsersController::signIn, "auth/signin", Post, Options);
 	ADD_METHOD_TO(UsersController::deleteOne, "user/{1}", Delete, Options, OwnerFilter);
 	METHOD_LIST_END
 
